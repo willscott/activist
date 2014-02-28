@@ -15,6 +15,10 @@
     "url": "https://github.com/willscott/distress"
   },
   "devDependencies": {
-    "freedom": "~0.3.0"
+    "freedom": "~0.3.0",
+    "grunt": "^0.4.2",
+    "grunt-contrib-concat": "^0.3.0",
+    "grunt-contrib-uglify": "^0.3.3",
+    "grunt-contrib-jshint": "^0.8.0"
   }
 }
