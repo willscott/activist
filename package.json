@@ -1,0 +1,20 @@
+{
+  "name": "distress",
+  "description": "resilience to network interference",
+  "version": "0.0.1",
+  "homepage": "https://github.com/willscott/distress",
+  "bugs": {
+    "url": "https://github.com/willscott/distress/issues",
+    "email": "willscott@gmail.com"
+  },
+  "contributors": [
+    "Will Scott <willscott@gmail.com> (https://wills.co.tt/)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/willscott/distress"
+  },
+  "devDependencies": {
+    "freedom": "~0.3.0"
+  }
+}
