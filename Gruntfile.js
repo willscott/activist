@@ -2,18 +2,18 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
-      distress: ['src/*.js']
+      activist: ['src/*.js']
     },
     concat: {
-      distress: {
+      activist: {
         src: ['src/*.js'],
-        dest: 'distress.js'
+        dest: 'activist.js'
       }
     },
     uglify: {
-      distress: {
+      activist: {
         files: {
-          'distress.min.js': ['distress.js']
+          'activist.min.js': ['activist.js']
         }
       }
     }
@@ -23,11 +23,11 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
-  grunt.registerTask('distress', [
+  grunt.registerTask('activist', [
     'jshint',
     'concat',
     'uglify'
   ]);
 
-  grunt.registerTask('default', ['distress']);
+  grunt.registerTask('default', ['activist']);
 };
