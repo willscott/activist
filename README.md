@@ -18,7 +18,9 @@ Deploying
 
 1. Add activist.js
 
-    ```<script type='text/javascript' src='activist.js' async></script>```
+    ```html
+    <script type='text/javascript' src='activist.js' async></script>
+    ```
 
 
 2. Add Offline Cache (optional)
@@ -28,7 +30,9 @@ Deploying
     process. First, you need to modify the ```html``` tag on your main page
     to reference the cache. It should look something like this:
     
-    ```<html manifest="activist.appcache">```
+    ```html
+    <html manifest="activist.appcache">
+    ```
     
     Sample appcaches are provided in the documentation of this repository.
     The following should work for most sites:
