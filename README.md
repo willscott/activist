@@ -50,5 +50,5 @@ Deploying
 Contributing
 ------------
 
-    Contribution and help are welcome! activist.js development is centered on
-    github, and open tasks can be found in the issues area of this repository.
+Contribution and help are welcome! activist.js development is centered on
+github, and open tasks can be found in the issues area of this repository.
