@@ -2,7 +2,10 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
-      activist: ['src/*.js']
+      activist: ['src/*.js'],
+      options: {
+        jshintrc: true
+      }
     },
     concat: {
       activist: {

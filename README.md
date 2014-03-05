@@ -23,19 +23,19 @@ Deploying
     ```
 
 
-2. Add Offline Cache (optional)
+2. Add Offline Cache (recommended)
 
     Adding an application cache manifest will allow activist.js to run on many
     more browsers, and is strongly recommended. Adding this cache is a 2 step
-    process. First, you need to modify the ```html``` tag on your main page
-    to reference the cache. It should look something like this:
+    process. First, modify the ```html``` tag of your entry pages to reference
+    the cache. It should look something like this:
     
     ```html
-    <html manifest="activist.appcache">
+    <html manifest="/activist.appcache">
     ```
     
     Sample appcaches are provided in the documentation of this repository.
-    The following should work for most sites:
+    The following is a minimal configuration for activating your hope page:
     
     ```
     CACHE MANIFEST
@@ -45,7 +45,10 @@ Deploying
     
     Note that the application cache should be served with the mime type
     of 'text/cache-manifest'. More information on the application cache
-    mechanics is available on the [w3 website](http://www.whatwg.org/specs/web-apps/current-work/multipage/offline.html).
+    mechanics are available on the [w3 website](http://www.whatwg.org/specs/web-apps/current-work/multipage/offline.html).
 
 Contributing
 ------------
+
+    Contribution and help are welcome! activist.js development is centered on
+    github, and open tasks can be found in the issues area of this repository.
