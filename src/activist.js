@@ -17,8 +17,7 @@
                 console.error(err);
             });
         } else {
-            // appCache Entry
-            console.warn(navigator.onLine);
+          
         }
     };
 

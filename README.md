@@ -47,6 +47,23 @@ Deploying
     of 'text/cache-manifest'. More information on the application cache
     mechanics are available on the [w3 website](http://www.whatwg.org/specs/web-apps/current-work/multipage/offline.html).
 
+How?
+----
+
+Activist tries really hard to keep your content accessible in the face of
+adversity.  In practice this results in several independent processes that kick
+into action when your server is unavailable.
+
+The first line of access is to preserve a reasonable cache of your site to
+allow users to see existing content even if they can't get new updates.  To
+this end, Activist maintains a cache of your content on client machines and
+shows that content when needed.
+
+To retreive updates, Activist attempts to establish connectivity through CDNs
+and other rendezvous services. These rendezvous services update while Activist
+is online, and aim to force interference with a large quantity of content to
+successfully disrupt.
+
 Contributing
 ------------
 
