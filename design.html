@@ -1,0 +1,43 @@
+<html>
+<head>
+  <title>activist.js design</title>
+</head>
+<body>
+  <header>
+    <h1>
+      Activist.js: Design Doc
+    </h1>
+  </header>
+  <section>
+    <h2>Goals</h2>
+    <p>
+      Goal for users: no action needed until a page is unavailable.
+      Goal for publishers: drop in script tag inclusion.
+    </p>
+  </section>
+  <section>
+    <h2>Mechanism</h2>
+    <code>
+      &lt;html manifest='cache.manifest'&gt;
+      &lt;script type='text/javascript' src='[drop in script].js'&gt;
+      &lt;/script&gt;
+    </code>
+    <p>
+      The script will watch for 'onError' events, and when it detects blocking of the hosted domain, but accessibility to benign sites, it will spring into action.
+    </p>
+    <p>
+      On your first visit to one of these sites, it will retreive a set of ~5 domains which also run the library, and load a 5MB section of the current tor browser bundle (~25MB total) at each one (this is due to per-domain browser storage limits).  To  do this, it will load iframes for those domains, and connect to the other scripts via a sharedWorker object. Remember that these domains also will be cache manifest enabled, ensuring that the downloaded content remains accessible in the event that a censoring event affects multiple domains.
+    </p>
+    <p>
+      When the page is blocked, activist.js will prompt the user if they want to use TorBrowser to get access to the blocked content. If they do, they'll be prompted for the 'unlimited storage' permission on their local domain.  Once that permission is granted, the chunks of the browser bundle cached on the unprivileged domains are transferred to the local domain and assembled into a single 'file'.  Signature check would also be performed against this reassembled version at this point.  A filesystem URL is then generated from the blob and used to extract the data to the TorBrowser installer for the user to download.
+    </p>
+  </section>
+  <section>
+    <h2>FAQ</h2>
+    
+    <p>
+      Responding to cached domains being blocked. Client can be identified at the point of contact and a stable set of domains chosen for them, without revealing all participating domains. Participating domains won't nessicarily be reporting access logs back to a central coordinator, so we can't do quite as well as vpngate, but since all activist.js enabled domains become additional caching domains, the blocking of one will nessecitate the blocking of all.
+    </p>
+  </section>
+</body>
+</html>
