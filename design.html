@@ -1,43 +1,205 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <title>activist.js design</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="container">
   <header>
     <h1>
       Activist.js: Design Doc
     </h1>
+    <h5>
+      <small>
+        Will Scott (willscott@gmail.com)
+      </small>
+    </h5>
   </header>
   <section>
-    <h2>Goals</h2>
+    <h2>Overview</h2>
+    <p class="lead">
+      Censorship is currently treated as a user problem. However, significant
+      mitigation can occur with publisher rather than user buy-in. DDOS in
+      contrast is seen as a publisher problem, and mitigated by publishers. why
+      not censorship resistance as a service.
+    </p>
+    <h3>Goals</h3>
+    <dl class="dl-horizontal">
+      <dt>Users</dt>
+      <dd>Users should not notice that mitigation is in place until censorship
+          occurs. At that point, they should be offered alternative mechanisms
+          to access desired content, or ideally content should continue to be
+          served despite censorship attempts.
+      </dd>
+      <dt>Publishers</dt>
+      <dd>Nontechnical publishers should be able to apply mitigation to their
+          content. Mitigation should be as close to a single script tag as
+          possible, and not require changes to publisher infrastructure.
+      </dd>
+    </dl>
+    <h3>Strategy</h3>
     <p>
-      Goal for users: no action needed until a page is unavailable.
-      Goal for publishers: drop in script tag inclusion.
+      Using appCache, and forthcoming serviceWorkers, mitigated pages will
+      cache logic for alternate content fetching techniques in the event of
+      censorship. These include:
+    </p>
+    <ul>
+      <li>Delivery of existing tools like Tor</li>
+      <li>Indirection of content through proxies</li>
+      <li>Indirection of content through other clients</li>
+    </ul>
+    <h3>Implementation</h3>
+    <p>
+      Static javascript library for publishers. Make it easy for users to
+      get circumvention tools when they need them, by pre-caching them on
+      disk.
     </p>
   </section>
   <section>
-    <h2>Mechanism</h2>
-    <code>
-      &lt;html manifest='cache.manifest'&gt;
-      &lt;script type='text/javascript' src='[drop in script].js'&gt;
-      &lt;/script&gt;
-    </code>
+    <h2>Technical Objectives</h2>
+    <ol>
+      <li>Invisible
+        <ol>
+          <li>No noticiable page change for user</li>
+          <li>No ongoing requirements from publishers</li>
+          <li>Users have deniability of circumvention intent</li>
+        </ol>
+      </li>
+      <li>Scalable
+        <ol>
+          <li>More publishers produce more collateral damage</li>
+          <li>No centralized blockable entity</li>
+        </ol>
+      </li>
+      <li>Private
+        <ol>
+          <li>Full list of participating sites should not be available</li>
+          <li>Identification of other clients should not be possible</li>
+        </ol>
+      </li>
+    </ol>
+  </section>
+  <section>
+    <h2>Narrative</h2>
+    A publisher will enable their domain via a code snippit equivalent to:
+    <pre>
+&lt;html <b>manifest='cache.manifest'</b>&gt;
+  &lt;head&gt;
+    <b>&lt;script type='text/javascript' src='activist.js'&gt;&lt;/script&gt;</b></pre>
     <p>
-      The script will watch for 'onError' events, and when it detects blocking of the hosted domain, but accessibility to benign sites, it will spring into action.
+      Once in place, clients visiting the site will cache an appropriate
+      circumvention binary in their browser cache, in case the site subsqeuntly
+      becomes unavailable.
     </p>
     <p>
-      On your first visit to one of these sites, it will retreive a set of ~5 domains which also run the library, and load a 5MB section of the current tor browser bundle (~25MB total) at each one (this is due to per-domain browser storage limits).  To  do this, it will load iframes for those domains, and connect to the other scripts via a sharedWorker object. Remember that these domains also will be cache manifest enabled, ensuring that the downloaded content remains accessible in the event that a censoring event affects multiple domains.
+      The initial version of activist.js will focus on providing access to the Tor Browser Bundle.
     </p>
     <p>
-      When the page is blocked, activist.js will prompt the user if they want to use TorBrowser to get access to the blocked content. If they do, they'll be prompted for the 'unlimited storage' permission on their local domain.  Once that permission is granted, the chunks of the browser bundle cached on the unprivileged domains are transferred to the local domain and assembled into a single 'file'.  Signature check would also be performed against this reassembled version at this point.  A filesystem URL is then generated from the blob and used to extract the data to the TorBrowser installer for the user to download.
+      On the first visit, activist.js will retreive a set of ~5 other domains which also run the library, and load 5MB section of the current bundle (~25MB total) at each one (this is due to per-domain browser storage limits).  To  do this, it will load iframes for those domains, and connect to the other instances. Remember that these domains also will be cache manifest enabled, ensuring that the downloaded content remains accessible in the event of subsequent interference affecting multiple domains.
+    </p>
+    <p>
+      If the domain is subsequently blocked, activist.js will prompt the user to use TorBrowser to get access to the content. They are then prompted for the 'unlimited storage' permission on their local domain.  Once that permission is granted, the chunks of the cached executable are reassembled into a single 'file'.  Signature check is performed against this reassembled version at this point.  A filesystem URL is then generated from the blob and used to extract the data to the installer for the user to download.
     </p>
   </section>
   <section>
-    <h2>FAQ</h2>
-    
+    <h2>Activist.js Architecture</h2>
     <p>
-      Responding to cached domains being blocked. Client can be identified at the point of contact and a stable set of domains chosen for them, without revealing all participating domains. Participating domains won't nessicarily be reporting access logs back to a central coordinator, so we can't do quite as well as vpngate, but since all activist.js enabled domains become additional caching domains, the blocking of one will nessecitate the blocking of all.
+      activist.js is structured as four modules
     </p>
+    <dl>
+      <dt>Liveness</dt>
+      <dd>
+        Determines current network state, and in particular if there is
+        blocking of the current domain while other network activity is
+        possible.
+       </dd>
+       <dt>Cache</dt>
+       <dd>
+         Fetches appropriate content and stores them in browser storage.
+         Coordinates with other active domains to shard payloads too large
+         to fit in a single cache.
+       </dd>
+       <dt>Coordinator</dt>
+       <dd>
+         Coordinates between activist.js enabled discovery of participants.
+         Attempt signalling in the presence of infrastructure blocking.
+       </dd>
+       <dt>Interface</dt>
+       <dd>
+         Communicates blocking to the user, and offers mitigation strategies.
+       </dd>
+    </dl>
+    <h3>Components</h3>
+    <h4>Liveness</h4>
+    <p>
+      Determining the state of internet connection can be done by looking at
+      navigator.onLine (which detects general connectivity) in tandem with
+      checking XHR requests to the local domain, and a set of 'safe' domains.
+    </p>
+    <h4>Cache</h4>
+    <p>
+      The cache will use the FileSystem API, which typically is limited to 5MB.
+      A larger file can be stored by using multiple top level domains.
+      To reassemble the full payload into a single url the user must at the
+      time of blocking approve a
+      <a href='http://www.html5rocks.com/en/tutorials/file/filesystem/#toc-requesting-quota'>
+        <code>requestQuota</code></a> call on one of the domains.
+    </p>
+    <h4>Coordinator</h4>
+    <p>
+      The coordinator does 2 things: Discovery of cooperating domains, and
+      message passing between cooperating domains.
+    </p>
+    <p>
+      In order to discover participating domains, we will initially use a
+      private backend for coordination.  This allows us to do similar
+      practical blocking mitigation as other one-hop circumvention systems.
+    </p>
+    <p>
+      It is expected that this centralized infrastructure will be blocked
+      in various countries. However, there remain a number of indirection
+      channels which can be leveraged to increase the collatoral damage
+      associated with blocking them - for example STUN offers the ability
+      to initiate a P2P connection setup, and the RESPONSE ADDRESS field
+      allows the server's response to be indirected to the final destination,
+      which can then delegate an unblocked machine to initiate connection back
+      to the blocked user.
+    </p>
+    <p>
+      For message passing, sites will add a known 'activistproxy.html' file
+      on their domain to be opened in an iframe, which responds to messages
+      passed by other participating domains. Domains will verify funcitonality
+      of each other, as will the coordinator to ensure conformance to the
+      protocol.
+    </p>
+    <h4>Interface</h4>
+    <p>
+      The interface will only display when a page is blocked, but needs to
+      communicate to the user what has happend and what option activist.js is
+      able to provide them to regain access to the content. Minimally, this
+      needs to be some on-screen notification that the content they are viewing
+      is state and served out of the app-cache due to network interference.
+    </p>
+  </section>
+  <section>
+    <h2>Threat Model</h2>
+    <p>
+      The adversary model is designed to largely express the powers of a
+      state or ISP level actor. Activist.js is designed to tolerate an
+      adversary with the following capabilities:
+    </p>
+    <ol>
+      <li>Ability to block traffic using
+        DNS Poisoning,
+        IP Blacklist, or
+        Protocol Blacklist.
+      </li>
+      <li>Ability to fingerprint traffic based on size and
+        communication patterns.
+      </li>
+      <li>Unwilling to block all HTTPS Traffic.</li>
+      <li>Unable to block on inspect HTTPS Traffic in realtime.</li>
   </section>
 </body>
 </html>
