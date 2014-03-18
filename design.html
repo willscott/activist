@@ -19,10 +19,10 @@
   <section>
     <h2>Overview</h2>
     <p class="lead">
-      Censorship is currently treated as a user problem. However, significant
-      mitigation can occur with publisher rather than user buy-in. DDOS in
-      contrast is seen as a publisher problem, and mitigated by publishers. why
-      not censorship resistance as a service.
+      Censorship is currently seen as a user problem. There are meaningful
+      mitigation strategies that publishers can unilaterally deploy.
+      The financial and reputation benefits have supported DDOS mitigation;
+      why isn't censorship resistance a service?
     </p>
     <h3>Goals</h3>
     <dl class="dl-horizontal">
@@ -30,19 +30,20 @@
       <dd>Users should not notice that mitigation is in place until censorship
           occurs. At that point, they should be offered alternative mechanisms
           to access desired content, or ideally content should continue to be
-          served despite censorship attempts.
+          served despite network interference.
       </dd>
       <dt>Publishers</dt>
       <dd>Nontechnical publishers should be able to apply mitigation to their
           content. Mitigation should be as close to a single script tag as
-          possible, and not require changes to publisher infrastructure.
+          possible, and not require changes to publisher infrastructure, or
+          frequent redeployment.
       </dd>
     </dl>
     <h3>Strategy</h3>
     <p>
       Using appCache, and forthcoming serviceWorkers, mitigated pages will
       cache logic for alternate content fetching techniques in the event of
-      censorship. These include:
+      interference. These include:
     </p>
     <ul>
       <li>Delivery of existing tools like Tor</li>
@@ -61,7 +62,7 @@
     <ol>
       <li>Invisible
         <ol>
-          <li>No noticiable page change for user</li>
+          <li>No noticeable page change for user</li>
           <li>No ongoing requirements from publishers</li>
           <li>Users have deniability of circumvention intent</li>
         </ol>
@@ -82,21 +83,21 @@
   </section>
   <section>
     <h2>Narrative</h2>
-    A publisher will enable their domain via a code snippit equivalent to:
+    A publisher will enable their domain via a code snippet equivalent to:
     <pre>
 &lt;html <b>manifest='cache.manifest'</b>&gt;
   &lt;head&gt;
     <b>&lt;script type='text/javascript' src='activist.js'&gt;&lt;/script&gt;</b></pre>
     <p>
       Once in place, clients visiting the site will cache an appropriate
-      circumvention binary in their browser cache, in case the site subsqeuntly
+      circumvention binary in their browser cache, in case the site subsequently
       becomes unavailable.
     </p>
     <p>
       The initial version of activist.js will focus on providing access to the Tor Browser Bundle.
     </p>
     <p>
-      On the first visit, activist.js will retreive a set of ~5 other domains which also run the library, and load 5MB section of the current bundle (~25MB total) at each one (this is due to per-domain browser storage limits).  To  do this, it will load iframes for those domains, and connect to the other instances. Remember that these domains also will be cache manifest enabled, ensuring that the downloaded content remains accessible in the event of subsequent interference affecting multiple domains.
+      On the first visit, activist.js will retrieve a set of ~5 other domains which also run the library, and load 5MB section of the current bundle (~25MB total) at each one (this is due to per-domain browser storage limits).  To  do this, it will load iframes for those domains, and connect to the other instances. Remember that these domains also will be cache manifest enabled, ensuring that the downloaded content remains accessible in the event of subsequent interference affecting multiple domains.
     </p>
     <p>
       If the domain is subsequently blocked, activist.js will prompt the user to use TorBrowser to get access to the content. They are then prompted for the 'unlimited storage' permission on their local domain.  Once that permission is granted, the chunks of the cached executable are reassembled into a single 'file'.  Signature check is performed against this reassembled version at this point.  A filesystem URL is then generated from the blob and used to extract the data to the installer for the user to download.
@@ -123,7 +124,7 @@
        <dt>Coordinator</dt>
        <dd>
          Coordinates between activist.js enabled discovery of participants.
-         Attempt signalling in the presence of infrastructure blocking.
+         Attempt signaling in the presence of infrastructure blocking.
        </dd>
        <dt>Interface</dt>
        <dd>
@@ -159,7 +160,7 @@
     <p>
       It is expected that this centralized infrastructure will be blocked
       in various countries. However, there remain a number of indirection
-      channels which can be leveraged to increase the collatoral damage
+      channels which can be leveraged to increase the collateral damage
       associated with blocking them - for example STUN offers the ability
       to initiate a P2P connection setup, and the RESPONSE ADDRESS field
       allows the server's response to be indirected to the final destination,
@@ -169,14 +170,14 @@
     <p>
       For message passing, sites will add a known 'activistproxy.html' file
       on their domain to be opened in an iframe, which responds to messages
-      passed by other participating domains. Domains will verify funcitonality
+      passed by other participating domains. Domains will verify functionality
       of each other, as will the coordinator to ensure conformance to the
       protocol.
     </p>
     <h4>Interface</h4>
     <p>
       The interface will only display when a page is blocked, but needs to
-      communicate to the user what has happend and what option activist.js is
+      communicate to the user what has happened and what option activist.js is
       able to provide them to regain access to the content. Minimally, this
       needs to be some on-screen notification that the content they are viewing
       is state and served out of the app-cache due to network interference.
