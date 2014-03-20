@@ -10,11 +10,11 @@
     <h1>
       Activist.js: Design Doc
     </h1>
-    <h5>
+    <h4>
       <small>
         Will Scott (willscott@gmail.com)
       </small>
-    </h5>
+    </h4>
   </header>
   <section>
     <h2>Overview</h2>
@@ -52,9 +52,9 @@
     </ul>
     <h3>Implementation</h3>
     <p>
-      Static javascript library for publishers. Make it easy for users to
-      get circumvention tools when they need them, by pre-caching them on
-      disk.
+      activist.js will be delivered as a static javascript library for
+      publishers. It will make it easy for users to get circumvention tools
+      when they need them, by making sure they are actually pre-cached on disk.
     </p>
   </section>
   <section>
@@ -201,6 +201,47 @@
       </li>
       <li>Unwilling to block all HTTPS Traffic.</li>
       <li>Unable to block on inspect HTTPS Traffic in realtime.</li>
+    </ol>
+    <h3>Attacks and Defenses</h3>
+    <dl>
+      <dt>Local DNS Poisoning</dt>
+      <dd>
+        If the local domain can't be reached, activist will be loaded by the
+        cache, and can alert the user normally.
+      </dd>
+      <dt>Infrastructure DNS Poisoning</dt>
+      <dd>
+        If coordinators used by activist can't be reached, activist can attempt
+        instead to initiate a WebRTC connection, using known stun server to
+        alert a watching party of its presence. This works by faking the
+        SIP answer to come from the well known destination, and when the
+        connection can not be made directly, signalling will occur via
+        intermediary stun and turn server. Upon learning of a peer, the
+        coordinator can either forge packets in response, (or use a TURN
+        relay) to communicate back alternative connection means.  Potentially,
+        this could take the form of an unblocked client, who would only
+        participate transiently in the exchange.  The complexity of this
+        response is expected to develop over time as the capabilities of
+        the protocols involve stabalize.
+      </dd>
+      <dt>IP Blocking</dt>
+      <dd>
+        Will Be handled in the same way as DNS Poisoning above.
+      </dd>
+      <dt>Blocking of other sites</dt>
+      <dd>
+        Potentially a smaller target can be used which fits in
+        the single domain 5MB space.
+      </dd>
+      <dt>Crawling of participating sites</dt>
+      <dd>
+        short lists can be given out, including sites controlled
+        by the coordinator who can track for crawling behavior.
+        When crawling is distributed across many IP addresses,
+        WebRTC communication against supposidly 'blocked' nodes
+        can be used to help detect if new sites are really needed.
+      </dd>
+    </dl>
   </section>
 </body>
 </html>
