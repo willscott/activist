@@ -21,8 +21,20 @@
     <p class="lead">
       Censorship is currently seen as a user problem. There are meaningful
       mitigation strategies that publishers can unilaterally deploy.
-      The financial and reputation benefits have supported DDOS mitigation;
+      Financial and reputation benefits have supported DDOS mitigation;
       why isn't censorship resistance a service?
+    </p>
+    <h3>Strategy</h3>
+    <p>
+      There are two mechanisms that seem available to a publisher to
+      disincentivize network interference. The first is collateral damage,
+      forcing a censor to block additional, user-noticeable content in order
+      to fully block the publisher. In activist.js, this collateral damage can
+      spread to all implementers of the library, along with the ability to
+      do arbitrary video chats. The second mechanism for disincentivization is
+      to cause users to see more objectionable content in the event of
+      interference. In activist.js, this is done by educating users about
+      how to circumvent censorship as a response to content blocks.
     </p>
     <h3>Goals</h3>
     <dl class="dl-horizontal">
@@ -38,23 +50,30 @@
           possible, and not require changes to publisher infrastructure, or
           frequent redeployment.
       </dd>
+      <dt>Censors</dt>
+      <dd>Censors should be discouraged from blocking access to participating
+          publishers by both technical and social means. Technically, it should
+          be difficult to fully block access to the publisher from existing
+          visitors, and socially it should be worrisome that implementing
+          blocks will educate the users on how to effectively circumvent
+          network interference.
+      </dd>
     </dl>
-    <h3>Strategy</h3>
+    <h3>Implementation</h3>
     <p>
-      Using appCache, and forthcoming serviceWorkers, mitigated pages will
-      cache logic for alternate content fetching techniques in the event of
-      interference. These include:
+      Using mainstream web tools, participating sites will
+      cache logic to run in the event of
+      interference. This logic can include:
     </p>
     <ul>
       <li>Delivery of existing tools like Tor</li>
-      <li>Indirection of content through proxies</li>
-      <li>Indirection of content through other clients</li>
+      <li>Retrieval of content through proxies</li>
+      <li>Retrieval of content through other clients</li>
     </ul>
-    <h3>Implementation</h3>
     <p>
       activist.js will be delivered as a static javascript library for
-      publishers. It will make it easy for users to get circumvention tools
-      when they need them, by making sure they are actually pre-cached on disk.
+      publishers. It will make it easy for to get circumvention tools
+      when you need them, by making sure they are already on your computer.
     </p>
   </section>
   <section>
@@ -63,7 +82,7 @@
       <li>Invisible
         <ol>
           <li>No noticeable page change for user</li>
-          <li>No ongoing requirements from publishers</li>
+          <li>No infrastructure / server requirement from publishers</li>
           <li>Users have deniability of circumvention intent</li>
         </ol>
       </li>
@@ -97,10 +116,10 @@
       The initial version of activist.js will focus on providing access to the Tor Browser Bundle.
     </p>
     <p>
-      On the first visit, activist.js will retrieve a set of ~5 other domains which also run the library, and load 5MB section of the current bundle (~25MB total) at each one (this is due to per-domain browser storage limits).  To  do this, it will load iframes for those domains, and connect to the other instances. Remember that these domains also will be cache manifest enabled, ensuring that the downloaded content remains accessible in the event of subsequent interference affecting multiple domains.
+      On the first visit, activist.js will retrieve a set of ~5 other domains which also run the library, and load 5MB sections of the current bundle (a ~25MB binary) on each one (this is due to per-domain browser storage limits).  To do this, it will load iframes for those domains, and connect to the other instances. These domains will also request caching, to raise the probability that the downloaded content remains accessible in the event of subsequent interference affecting multiple domains.
     </p>
     <p>
-      If the domain is subsequently blocked, activist.js will prompt the user to use TorBrowser to get access to the content. They are then prompted for the 'unlimited storage' permission on their local domain.  Once that permission is granted, the chunks of the cached executable are reassembled into a single 'file'.  Signature check is performed against this reassembled version at this point.  A filesystem URL is then generated from the blob and used to extract the data to the installer for the user to download.
+      If the domain is subsequently blocked, activist.js will prompt the user to use TorBrowser to get access to the content. User confirmation allows the page to reassemble the cached data into a single file for installation.
     </p>
   </section>
   <section>
@@ -117,13 +136,13 @@
        </dd>
        <dt>Cache</dt>
        <dd>
-         Fetches appropriate content and stores them in browser storage.
-         Coordinates with other active domains to shard payloads too large
+         Fetches appropriate content and stores it in browser storage.
+         Coordinates with other active domains to shard binaries too large
          to fit in a single cache.
        </dd>
        <dt>Coordinator</dt>
        <dd>
-         Coordinates between activist.js enabled discovery of participants.
+         Coordinates, and discovers activist.js enabled domains.
          Attempt signaling in the presence of infrastructure blocking.
        </dd>
        <dt>Interface</dt>
@@ -136,14 +155,13 @@
     <p>
       Determining the state of internet connection can be done by looking at
       navigator.onLine (which detects general connectivity) in tandem with
-      checking XHR requests to the local domain, and a set of 'safe' domains.
+      success of XHR requests to the local domain, and a set of 'safe' domains.
     </p>
     <h4>Cache</h4>
     <p>
       The cache will use the FileSystem API, which typically is limited to 5MB.
       A larger file can be stored by using multiple top level domains.
-      To reassemble the full payload into a single url the user must at the
-      time of blocking approve a
+      To reassemble the full payload into a single url the user must approve a
       <a href='http://www.html5rocks.com/en/tutorials/file/filesystem/#toc-requesting-quota'>
         <code>requestQuota</code></a> call on one of the domains.
     </p>
@@ -159,13 +177,15 @@
     </p>
     <p>
       It is expected that this centralized infrastructure will be blocked
-      in various countries. However, there remain a number of indirection
+      in some locations. However, there remain a number of indirection
       channels which can be leveraged to increase the collateral damage
-      associated with blocking them - for example STUN offers the ability
-      to initiate a P2P connection setup, and the RESPONSE ADDRESS field
-      allows the server's response to be indirected to the final destination,
-      which can then delegate an unblocked machine to initiate connection back
-      to the blocked user.
+      associated with blocking that infrastructure - a current example of
+      such collateral damage is that it is likely possible to indirect
+      signaling messages through the ICE connection protocol used in
+      web chat. With this indirection in place, a censor would have to
+      block a significant fraction of UDP traffic, and would at least
+      disrupt many general purpose video chat applications in the process
+      of blocking objectionable content.
     </p>
     <p>
       For message passing, sites will add a known 'activistproxy.html' file
@@ -212,17 +232,17 @@
       <dt>Infrastructure DNS Poisoning</dt>
       <dd>
         If coordinators used by activist can't be reached, activist can attempt
-        instead to initiate a WebRTC connection, using known stun server to
+        instead to initiate a WebRTC connection, using known chat server to
         alert a watching party of its presence. This works by faking the
         SIP answer to come from the well known destination, and when the
-        connection can not be made directly, signalling will occur via
+        connection can not be made directly, signaling will occur via
         intermediary stun and turn server. Upon learning of a peer, the
         coordinator can either forge packets in response, (or use a TURN
         relay) to communicate back alternative connection means.  Potentially,
         this could take the form of an unblocked client, who would only
         participate transiently in the exchange.  The complexity of this
         response is expected to develop over time as the capabilities of
-        the protocols involve stabalize.
+        the protocols involved stabilize.
       </dd>
       <dt>IP Blocking</dt>
       <dd>
@@ -238,7 +258,7 @@
         short lists can be given out, including sites controlled
         by the coordinator who can track for crawling behavior.
         When crawling is distributed across many IP addresses,
-        WebRTC communication against supposidly 'blocked' nodes
+        WebRTC communication against supposedly 'blocked' nodes
         can be used to help detect if new sites are really needed.
       </dd>
     </dl>
