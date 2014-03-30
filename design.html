@@ -4,6 +4,9 @@
   <title>activist.js design</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+  <script src="http://assets.annotateit.org/annotator/v1.2.7/annotator-full.min.js"></script>
+  <link rel="stylesheet" href="http://assets.annotateit.org/annotator/v1.2.7/annotator.min.css">
 </head>
 <body class="container">
   <header>
@@ -263,5 +266,14 @@
       </dd>
     </dl>
   </section>
+  <script type="text/javascript">
+    jQuery(function($) {
+      $('section').annotator()
+                  .annotator('setupPlugins, {}, {
+                    Tags: false,
+                    Filter: false
+                  });
+    });
+  </script>
 </body>
 </html>
