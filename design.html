@@ -19,22 +19,22 @@
   <section>
     <h2>Overview</h2>
     <p class="lead">
-      Censorship is currently seen as a user problem. There are meaningful
+      Censorship is currently seen as a user problem. But, there are meaningful
       mitigation strategies that publishers can unilaterally deploy.
       Financial and reputation benefits have supported DDOS mitigation;
-      why isn't censorship resistance a service?
+      why not censorship resistance?
     </p>
     <h3>Strategy</h3>
     <p>
-      There are two mechanisms that seem available to a publisher to
+      There are two main mechanisms available to a publisher to
       disincentivize network interference. The first is collateral damage,
-      forcing a censor to block additional, user-noticeable content in order
-      to fully block the publisher. In activist.js, this collateral damage can
-      spread to all implementers of the library, along with the ability to
-      do arbitrary video chats. The second mechanism for disincentivization is
+      forcing a censor to block inocuous, valuable content in order
+      to fully block the publisher. In activist.js, this collateral damage
+      covers all participants in the system, along with the mechanism for
+      user-to-user video chat. The second mechanism for disincentivization is
       to cause users to see more objectionable content in the event of
       interference. In activist.js, this is done by educating users about
-      how to circumvent censorship as a response to content blocks.
+      how to circumvent censorship as a response to interference.
     </p>
     <h3>Goals</h3>
     <dl class="dl-horizontal">
@@ -52,28 +52,28 @@
       </dd>
       <dt>Censors</dt>
       <dd>Censors should be discouraged from blocking access to participating
-          publishers by both technical and social means. Technically, it should
-          be difficult to fully block access to the publisher from existing
-          visitors, and socially it should be worrisome that implementing
-          blocks will educate the users on how to effectively circumvent
+          publishers through both technical and social means. Technically, it
+          should be difficult to to prevent previous visitors from continuing
+          to access a publishers content, and socially it should be worrisome
+          that blocking will educate users on how to effectively circumvent
           network interference.
       </dd>
     </dl>
     <h3>Implementation</h3>
     <p>
-      Using mainstream web tools, participating sites will
-      cache logic to run in the event of
-      interference. This logic can include:
+      Using existing web APIs, participating sites will cache scripts to run
+      in the event that they become inaccessable. These scripts could, as
+      an example:
     </p>
     <ul>
-      <li>Delivery of existing tools like Tor</li>
-      <li>Retrieval of content through proxies</li>
-      <li>Retrieval of content through other clients</li>
+      <li>Deliver existing circumvention tools like Tor</li>
+      <li>Retrieve content through proxy indirection</li>
+      <li>Retrieve content through other clients</li>
     </ul>
     <p>
-      activist.js will be delivered as a static javascript library for
-      publishers. It will make it easy for to get circumvention tools
-      when you need them, by making sure they are already on your computer.
+      The goal is to deliver activist.js as a static javascript library for
+      publishers. It will make it simple to get circumvention tools
+      when you need them, by proactivly downloading them to your computer.
     </p>
   </section>
   <section>
@@ -81,15 +81,15 @@
     <ol>
       <li>Invisible
         <ol>
-          <li>No noticeable page change for user</li>
+          <li>No page layout change or rendering delay</li>
           <li>No infrastructure / server requirement from publishers</li>
-          <li>Users have deniability of circumvention intent</li>
+          <li>Deniability of circumvention intent for users</li>
         </ol>
       </li>
       <li>Scalable
         <ol>
           <li>More publishers produce more collateral damage</li>
-          <li>No centralized blockable entity</li>
+          <li>No single blockable entity</li>
         </ol>
       </li>
       <li>Private
@@ -102,21 +102,21 @@
   </section>
   <section>
     <h2>Narrative</h2>
-    A publisher will enable their domain via a code snippet equivalent to:
+    A publisher will install activist.js via a code change like:
     <pre>
 &lt;html <b>manifest='cache.manifest'</b>&gt;
   &lt;head&gt;
     <b>&lt;script type='text/javascript' src='activist.js'&gt;&lt;/script&gt;</b></pre>
     <p>
       Once in place, clients visiting the site will cache an appropriate
-      circumvention binary in their browser cache, in case the site subsequently
+      circumvention binary and scripts, in case the site subsequently
       becomes unavailable.
     </p>
     <p>
       The initial version of activist.js will focus on providing access to the Tor Browser Bundle.
     </p>
     <p>
-      On the first visit, activist.js will retrieve a set of ~5 other domains which also run the library, and load 5MB sections of the current bundle (a ~25MB binary) on each one (this is due to per-domain browser storage limits).  To do this, it will load iframes for those domains, and connect to the other instances. These domains will also request caching, to raise the probability that the downloaded content remains accessible in the event of subsequent interference affecting multiple domains.
+      On the first visit, activist.js will retrieve a set of ~5 other domains which also run the library, and load 5MB sections of the current bundle (a ~25MB binary) on each one (this is due to per-domain browser storage limits).  To do this, it will load iframes for those domains, and connect to the other instances. All participating domains will have the script and appcache setup, raising the probability that the downloaded content will remain accessible in the event of interference affecting multiple domains.
     </p>
     <p>
       If the domain is subsequently blocked, activist.js will prompt the user to use TorBrowser to get access to the content. User confirmation allows the page to reassemble the cached data into a single file for installation.
@@ -125,7 +125,7 @@
   <section>
     <h2>Activist.js Architecture</h2>
     <p>
-      activist.js is structured as four modules
+      activist.js is structured as four components
     </p>
     <dl>
       <dt>Liveness</dt>
@@ -264,5 +264,15 @@
     </dl>
   </section>
   <a href="https://github.com/willscott/activist/blob/gh-pages/design.html"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-471290-12', 'activistjs.com');
+    ga('send', 'pageview');
+
+  </script>
 </body>
 </html>
