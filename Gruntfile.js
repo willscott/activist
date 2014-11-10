@@ -1,4 +1,6 @@
-module.exports = function(grunt) {
+/*jslint node:true*/
+module.exports = function (grunt) {
+  'use strict';
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     jshint: {
@@ -7,29 +9,23 @@ module.exports = function(grunt) {
         jshintrc: true
       }
     },
-    concat: {
+    browserify: {
       activist: {
-        src: ['src/*.js'],
+        src: ['src/activist.js'],
         dest: 'activist.js'
-      }
-    },
-    uglify: {
-      activist: {
-        files: {
-          'activist.min.js': ['activist.js']
-        }
+      },
+      options: {
+        plugin: ["minifyify"]
       }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-browserify');
 
   grunt.registerTask('activist', [
     'jshint',
-    'concat',
-    'uglify'
+    'browserify'
   ]);
 
   grunt.registerTask('default', ['activist']);
