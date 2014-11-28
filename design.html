@@ -33,13 +33,13 @@
     <p>
       There are two main mechanisms available to a publisher to
       disincentivize network interference. The first is collateral damage,
-      forcing a censor to block inocuous, valuable content in order
-      to fully block the publisher. In activist.js, this collateral damage
-      covers all participants in the system, along with the mechanism for
-      user-to-user video chat. The second mechanism for disincentivization is
-      to cause users to see more objectionable content in the event of
-      interference. In activist.js, this is done by educating users about
-      how to circumvent censorship as a response to interference.
+      forcing a censor to block innocuous, valuable content in order
+      to restrict access to unwanted material. In activist.js, we can provide
+      general purpose cloud-hosted rendezvous points that automate this process.
+      The second mechanism for disincentivization is causing users to see 
+      more objectionable content in the event of interference. In activist.js,
+      this is done by educating users about how to circumvent censorship in
+      response to content blocking.
     </p>
     <h3>Goals</h3>
     <dl class="dl-horizontal">
@@ -47,7 +47,7 @@
       <dd>Users should not notice that mitigation is in place until censorship
           occurs. At that point, they should be offered alternative mechanisms
           to access desired content, or ideally content should continue to be
-          served despite network interference.
+          served despite interference.
       </dd>
       <dt>Publishers</dt>
       <dd>Nontechnical publishers should be able to apply mitigation to their
@@ -67,18 +67,19 @@
     <h3>Implementation</h3>
     <p>
       Using existing web APIs, participating sites will cache scripts to run
-      in the event that they become inaccessable. These scripts could, as
-      an example:
+      in the event that their servers become inaccessable. These scripts will
+      be designed for the following use cases:
     </p>
     <ul>
-      <li>Deliver existing circumvention tools like Tor</li>
-      <li>Retrieve content through proxy indirection</li>
-      <li>Retrieve content through other clients</li>
+      <li>Notify users of what's happening, and available alternatives</li>
+      <li>Deliver circumvention tools like Tor</li>
+      <li>Retrieve content automatically through indirection</li>
     </ul>
     <p>
-      The goal is to deliver activist.js as a static javascript library for
-      publishers. It will make it simple to get circumvention tools
-      when you need them, by proactivly downloading them to your computer.
+      The goal is to deliver activist.js as a drop-in javascript library for
+      publishers. This will help publishers involved in cat-and-mouse games,
+      deliver circumvention tools at the time when they are most wanted, and
+      increase resillience to interference.
     </p>
   </section>
   <section>
@@ -109,13 +110,14 @@
     <h2>Narrative</h2>
     A publisher will install activist.js via a code change like:
     <pre>
-&lt;html <b>manifest='cache.manifest'</b>&gt;
-  &lt;head&gt;
-    <b>&lt;script type='text/javascript' src='activist.js'&gt;&lt;/script&gt;</b></pre>
+      <b>&lt;script type='text/javascript' src='activist.js'&gt;&lt;/script&gt;</b>
+    </pre>
     <p>
-      Once in place, clients visiting the site will cache an appropriate
-      circumvention binary and scripts, in case the site subsequently
-      becomes unavailable.
+      Once in place, clients visiting the site will have the application cache
+      functionaility of their browsers activated to specify cached fallback
+      content in the event the server cannot be reached. The specific behavior
+      of this fallback behavior will be determined by the publisher based on
+      the nature of the activist.js script they include.
     </p>
     <p>
       The initial version of activist.js will focus on providing access to the Tor Browser Bundle.
