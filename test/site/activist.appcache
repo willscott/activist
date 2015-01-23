@@ -1,0 +1,7 @@
+CACHE MANIFEST
+
+FALLBACK:
+/ iframe.html
+
+NETWORK:
+*
