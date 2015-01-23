@@ -23,6 +23,7 @@ var fs = require('fs');
 var http = require('http');
 var https = require('https');
 var minimist = require('minimist');
+var serverDestroyer = require('server-destroy');
 
 var MODES = {
   NORMAL: 0,
@@ -178,11 +179,9 @@ var server = http.createServer(onRequest).listen(port);
 var secure_server;
 function restartHTTPSServer() {
   if (secure_server) {
-    try {
-      secure_server.close(startHTTPSServer);
-    } catch (e) {
+    secure_server.destroy(function () {
       startHTTPSServer();
-    }
+    });
   } else {
     startHTTPSServer();
   }
@@ -191,7 +190,6 @@ function restartHTTPSServer() {
 function startHTTPSServer() {
   var keys;
   if (mode === MODES.SSL_SPOOF) {
-    console.warn('server resumed spoofing cert');
     keys = {
       key: fs.readFileSync('certs/unrooted.key.pem'),
       cert: fs.readFileSync('certs/unrooted.crt.pem')
@@ -204,7 +202,7 @@ function startHTTPSServer() {
   }
   secure_server = https.createServer(keys, onRequest);
   secure_server.listen(port + 1, function () {
-    console.warn('HTTPS Server Listening');
+    serverDestroyer(secure_server);
   });
 };
 
