@@ -36,7 +36,7 @@ var MODES = {
 
 var usage = function () {
   'use strict';
-  console.error("Usage: server.js [port]");
+  console.error("Usage: server.js [--port=8080] [--mode=0] [--root=./]");
   process.exit(1);
 };
 
@@ -44,6 +44,10 @@ var argv = minimist(process.argv.slice(2));
 var port = argv.port || 8080;
 var mode = argv.mode || MODES.NORMAL;
 var root = argv.root || __dirname;
+
+if (argv.h || argv.help) {
+  usage();
+}
 
 var make_404 = function (res) {
   'use strict';
