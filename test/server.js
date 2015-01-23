@@ -33,6 +33,16 @@ var MODES = {
   CLOSE_EMPTY: 6
 };
 
+var MODES_VERBOSE = [
+    'normal',
+    'never send',
+    'ssl spoof',
+    'block 404',
+    'block 302',
+    'block all',
+    'close empty'
+  ]
+
 var usage = function () {
   'use strict';
   console.error("Usage: server.js [port]");
@@ -88,23 +98,35 @@ var onRequest = function (req, res) {
   'use strict';
   var modes, file;
   if (req.url === '/control') {
+
     if (req.method === 'POST') {
+      debugger;
       req.on('data', function(d) {
         var data = d.toString();
         if (data.indexOf('mode=') === 0) {
           mode = parseInt(data.substr(5), 10);
           console.log('Mode is now ' + mode);
         }
+        console.log('redirecting');
+        res.writeHead(302,{
+          'Location':'/control'
+        });
+        res.end();
       });
+
+      return;
     }
 
     res.writeHead(200, {
       'Content-Type': 'text/html'
     });
-    Object.keys(MODES).forEach(function (mode) {
-      modes += "<option value='" + MODES[mode] + "'>" + mode + "</option>";
+    Object.keys(MODES).forEach(function (i_mode) {
+      modes += "<option value='" + MODES[i_mode] + "'>" + i_mode + "</option>";
     });
-    res.end('<html>Choose Mode: ' +
+    res.end('<html>'+
+            'Current Mode: ' + MODES_VERBOSE[mode] +
+            '</br>' +
+            'Choose Mode: ' +
             '<form action="/control" method="POST"><select name="mode">' +
             modes +
             '</select><input type="submit" /></form></html>');
@@ -114,7 +136,8 @@ var onRequest = function (req, res) {
     } catch (e) {
       return make_404(res);
     }
-    if (mode === MODES.NORMAL) {
+    if (mode === MODES.NORMAL || mode === MODES.SSL_SPOOF) {
+
       res.writeHead(200, {
         'Content-Type': 'text/html'
       });
@@ -163,6 +186,7 @@ https.createServer({
   SNICallback: function (hostname) {
     'use strict';
     if (mode === MODES.SSL_SPOOF) {
+      console.log('spoof');
       return certs.bad;
     } else {
       return certs.good;
