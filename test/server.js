@@ -22,6 +22,7 @@ var crypto = require('crypto');
 var fs = require('fs');
 var http = require('http');
 var https = require('https');
+var minimist = require('minimist');
 
 var MODES = {
   NORMAL: 0,
@@ -39,15 +40,10 @@ var usage = function () {
   process.exit(1);
 };
 
-var port = 8080;
-var mode = MODES.NORMAL;
-try {
-  if (process.argv[2]) {
-    port = parseInt(process.argv[2], 10);
-  }
-} catch (e) {
-  usage();
-}
+var argv = minimist(process.argv.slice(2));
+var port = argv.port || 8080;
+var mode = argv.mode || MODES.NORMAL;
+var root = argv.root || __dirname;
 
 var make_404 = function (res) {
   'use strict';
@@ -89,7 +85,7 @@ var onRequest = function (req, res) {
   var modes, file;
   if (req.url === '/control') {
     if (req.method === 'POST') {
-      req.on('data', function(d) {
+      req.on('data', function (d) {
         var data = d.toString();
         if (data.indexOf('mode=') === 0) {
           mode = parseInt(data.substr(5), 10);
@@ -110,7 +106,7 @@ var onRequest = function (req, res) {
             '</select><input type="submit" /></form></html>');
   } else {
     try {
-      file = fs.readFileSync(req.url.substr(1));
+      file = fs.readFileSync(root + req.url);
     } catch (e) {
       return make_404(res);
     }
