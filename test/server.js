@@ -42,13 +42,13 @@ var MODES_VERBOSE = [
     'block 302',
     'block all',
     'close empty'
-  ]
+  ];
 
-var usage = function () {
+function usage() {
   'use strict';
   console.error("Usage: server.js [--port=8080] [--mode=0] [--root=./]");
   process.exit(1);
-};
+}
 
 var argv = minimist(process.argv.slice(2));
 var port = argv.port || 8080;
@@ -101,14 +101,20 @@ var onRequest = function (req, res) {
 
     if (req.method === 'POST') {
       req.on('data', function (d) {
-        var data = d.toString();
+        var data = d.toString(),
+          newmode;
         if (data.indexOf('mode=') === 0) {
-          mode = parseInt(data.substr(5), 10);
+          newmode = parseInt(data.substr(5), 10);
+          if (newmode === MODES.SSL_SPOOF || mode === MODES.SSL_SPOOF) {
+            mode = newmode;
+            restartHTTPSServer();
+          }
+          mode = newmode;
           console.log('Mode is now ' + mode);
         }
         console.log('redirecting');
-        res.writeHead(302,{
-          'Location':'/control'
+        res.writeHead(302, {
+          'Location': '/control'
         });
         res.end();
       });
@@ -169,27 +175,37 @@ var onRequest = function (req, res) {
 
 var server = http.createServer(onRequest).listen(port);
 
-// For SSL.
-var certs = {
-  good: crypto.createCredentials({
-    key: fs.readFileSync('certs/my-server.key.pem'),
-    cert: fs.readFileSync('certs/my-server.crt.pem')
-  }).context,
-  bad: crypto.createCredentials({
-    key: fs.readFileSync('certs/unrooted.key.pem'),
-    cert: fs.readFileSync('certs/unrooted.crt.pem')
-  }).context
+var secure_server;
+function restartHTTPSServer() {
+  if (secure_server) {
+    try {
+      secure_server.close(startHTTPSServer);
+    } catch (e) {
+      startHTTPSServer();
+    }
+  } else {
+    startHTTPSServer();
+  }
+}
+
+function startHTTPSServer() {
+  var keys;
+  if (mode === MODES.SSL_SPOOF) {
+    console.warn('server resumed spoofing cert');
+    keys = {
+      key: fs.readFileSync('certs/unrooted.key.pem'),
+      cert: fs.readFileSync('certs/unrooted.crt.pem')
+    };
+  } else {
+    keys = {
+      key: fs.readFileSync('certs/my-server.key.pem'),
+      cert: fs.readFileSync('certs/my-server.crt.pem')
+    }
+  }
+  secure_server = https.createServer(keys, onRequest);
+  secure_server.listen(port + 1, function () {
+    console.warn('HTTPS Server Listening');
+  });
 };
 
-https.createServer({
-  SNICallback: function (hostname) {
-    'use strict';
-    if (mode === MODES.SSL_SPOOF) {
-      return certs.bad;
-    } else {
-      return certs.good;
-    }
-  },
-  key: fs.readFileSync('certs/my-server.key.pem').toString(),
-  cert: fs.readFileSync('certs/my-server.crt.pem').toString()
-}, onRequest).listen(port + 1);
+startHTTPSServer();
