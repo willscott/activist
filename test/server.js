@@ -22,6 +22,7 @@ var crypto = require('crypto');
 var fs = require('fs');
 var http = require('http');
 var https = require('https');
+var minimist = require('minimist');
 
 var MODES = {
   NORMAL: 0,
@@ -45,17 +46,16 @@ var MODES_VERBOSE = [
 
 var usage = function () {
   'use strict';
-  console.error("Usage: server.js [port]");
+  console.error("Usage: server.js [--port=8080] [--mode=0] [--root=./]");
   process.exit(1);
 };
 
-var port = 8080;
-var mode = MODES.NORMAL;
-try {
-  if (process.argv[2]) {
-    port = parseInt(process.argv[2], 10);
-  }
-} catch (e) {
+var argv = minimist(process.argv.slice(2));
+var port = argv.port || 8080;
+var mode = argv.mode || MODES.NORMAL;
+var root = argv.root || __dirname;
+
+if (argv.h || argv.help) {
   usage();
 }
 
@@ -100,8 +100,7 @@ var onRequest = function (req, res) {
   if (req.url === '/control') {
 
     if (req.method === 'POST') {
-      debugger;
-      req.on('data', function(d) {
+      req.on('data', function (d) {
         var data = d.toString();
         if (data.indexOf('mode=') === 0) {
           mode = parseInt(data.substr(5), 10);
@@ -132,7 +131,7 @@ var onRequest = function (req, res) {
             '</select><input type="submit" /></form></html>');
   } else {
     try {
-      file = fs.readFileSync(req.url.substr(1));
+      file = fs.readFileSync(root + req.url);
     } catch (e) {
       return make_404(res);
     }
@@ -186,7 +185,6 @@ https.createServer({
   SNICallback: function (hostname) {
     'use strict';
     if (mode === MODES.SSL_SPOOF) {
-      console.log('spoof');
       return certs.bad;
     } else {
       return certs.good;
