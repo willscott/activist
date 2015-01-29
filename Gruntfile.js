@@ -17,11 +17,21 @@ module.exports = function (grunt) {
       options: {
         plugin: ["minifyify"]
       }
+    },
+    mochaTest: {
+      characterize: {
+        options: {
+          reporter: 'spec',
+          quite: false
+        },
+        src: ['test/client.js']
+      }
     }
   });
 
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-mocha-test');
 
   grunt.registerTask('activist', [
     'jshint',

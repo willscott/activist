@@ -15,12 +15,15 @@
     "url": "https://github.com/willscott/activist"
   },
   "devDependencies": {
+    "chai": "^1.10.0",
     "freedom": "~0.3.2",
     "grunt": "^0.4.2",
     "grunt-browserify": "^3.2.0",
     "grunt-contrib-jshint": "^0.8.0",
+    "grunt-mocha-test": "^0.12.7",
     "minifyify": "^4.4.0",
     "minimist": "^1.1.0",
+    "mocha": "^2.1.0",
     "server-destroy": "^1.0.0"
   }
 }
