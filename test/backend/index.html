@@ -81,8 +81,8 @@
       var LOG_LEVELS, modes;
 
       LOG_LEVELS = [
-        "SRV",
-        "CLI"
+        "SERVER",
+        "BROWSER"
       ];
 
       function addLogRow(row){
@@ -90,7 +90,7 @@
         var rowVerbose = row;
         
         var tr = $("<tr><td>"+rowVerbose[0]+"</td><td>"+LOG_LEVELS[rowVerbose[1]]+"</td><td>"+rowVerbose[2]+"</td></tr>");
-        $('.log-table-body').prepend(tr);
+        $('.log-table-body').append(tr);
       }
 
       $('.spinner-change-mode').hide();
