@@ -24,6 +24,9 @@ var http = require('http');
 var https = require('https');
 var minimist = require('minimist');
 var serverDestroyer = require('server-destroy');
+var express = require('express');
+var moment = require('moment');
+var serverEvent = require('server-event');
 
 var MODES = {
   NORMAL: 0,
@@ -45,6 +48,16 @@ var MODES_VERBOSE = [
     'close empty'
   ];
 
+var LOG_LEVELS = {
+  SERVER : 0,
+  CLIENT : 1
+}
+
+var logs = [];
+var sseClients = [];
+
+
+
 function usage() {
   'use strict';
   console.error("Usage: server.js [--port=8080] [--mode=0] [--root=./]");
@@ -58,6 +71,18 @@ var root = argv.root || __dirname;
 
 if (argv.h || argv.help) {
   usage();
+}
+
+function sendSSE(event, data){
+  sseClients.forEach(function(client){
+    client.sse(event, data);
+  });
+}
+
+function addLog(level, message){
+  var logEntry = [moment().format(), level, message];
+  logs.unshift(logEntry);
+  sendSSE("log", logEntry);
 }
 
 var make_404 = function (res) {
@@ -137,6 +162,7 @@ var onRequest = function (req, res) {
             modes +
             '</select><input type="submit" /></form></html>');
   } else {
+    addLog(LOG_LEVELS.CLIENT, "["+MODES_VERBOSE[mode]+"] "+req.url);
     try {
       file = fs.readFileSync(root + req.url);
     } catch (e) {
@@ -207,3 +233,59 @@ function startHTTPSServer() {
 };
 
 startHTTPSServer();
+
+function changeMode(newMode){
+
+
+
+
+  mode = newMode;
+  sendSSE("mode",newMode.toString());
+  addLog(LOG_LEVELS.SERVER, "Changed mode to "+MODES_VERBOSE[mode]);
+}
+
+
+/** maintenance server **/
+var app = express();
+
+// serve static files from 
+app.use('/',express.static(__dirname+"/backend"));
+
+// return collected logs as json object
+app.get('/logs', function(req, res){
+  res.send(JSON.stringify(logs));
+});
+
+// return server modes
+app.get('/modes', function(req, res){
+  res.send(JSON.stringify(MODES_VERBOSE));
+});
+
+// return current mode
+app.get('/mode', function(req, res){
+  res.send(mode.toString());
+});
+
+app.post('/mode/:mode', function(req, res){
+  changeMode(req.params.mode);  
+  res.send(req.params.mode);
+});
+
+// initialize server sent events to push logs
+serverEvent = serverEvent();
+
+app.get('/sse', function(req, res){
+  serverEvent(req, res);
+  sseClients.push(res);
+  res.sse("console","SSE initialized");
+});
+
+// start the maintenance server
+var mserver = app.listen(8881, function(){
+  console.log('maintenance server listening');
+});
+
+addLog(LOG_LEVELS.SERVER, "initialized");
+
+
+

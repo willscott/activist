@@ -15,13 +15,17 @@
     "url": "https://github.com/willscott/activist"
   },
   "devDependencies": {
+    "express": "^4.11.1",
     "freedom": "~0.3.2",
     "grunt": "^0.4.2",
     "grunt-browserify": "^3.2.0",
     "grunt-contrib-jshint": "^0.8.0",
     "minifyify": "^4.4.0",
     "minimist": "^1.1.0",
+    "moment": "^2.9.0",
     "raw-socket": "^1.2.2",
-    "server-destroy": "^1.0.0"
-  }
+    "server-destroy": "^1.0.0",
+    "server-event": "^1.0.1"
+  },
+  "dependencies": {}
 }
