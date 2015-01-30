@@ -124,9 +124,9 @@ var make_block = function (res) {
           '</body></html>');
 };
 
-function enablePackageDrop(){
-  addLog(LOG_LEVELS.SERVER, "enabling package drop");
-  exec('iptables -A INPUT -p tcp --destination-port '+port+' -j DROP', function(error, stdout, stderr){
+function enablePackageDrop(port_){
+  addLog(LOG_LEVELS.SERVER, "enabling package drop on port "+ port_);
+  exec('iptables -A INPUT -p tcp --destination-port '+port_+' -j DROP', function(error, stdout, stderr){
     addLog(LOG_LEVELS.SERVER, "[EXECV STDOUT] "+stdout);
     addLog(LOG_LEVELS.SERVER, "[EXECV STDERR] "+stderr);
 
@@ -138,9 +138,9 @@ function enablePackageDrop(){
   });
 }
 
-function disablePackageDrop(){
-  addLog(LOG_LEVELS.SERVER, "disabling package drop");
-  exec('iptables -D INPUT -p tcp --destination-port '+port+' -j DROP', function(error, stdout, stderr){
+function disablePackageDrop(port_){
+  addLog(LOG_LEVELS.SERVER, "disabling package drop on port "+port_);
+  exec('iptables -D INPUT -p tcp --destination-port '+port_+' -j DROP', function(error, stdout, stderr){
     addLog(LOG_LEVELS.SERVER, "[EXECV STDOUT] "+stdout);
     addLog(LOG_LEVELS.SERVER, "[EXECV STDERR] "+stderr);
 
@@ -248,11 +248,13 @@ function changeMode(newmode, oldmode){
   }
 
   if(newmode === MODES.DROP_PACKAGE){
-    enablePackageDrop();
+    enablePackageDrop(ssl_port);
+    enablePackageDrop(port);
   }
 
   if(oldmode === MODES.DROP_PACKAGE){
-    disablePackageDrop();
+    disablePackageDrop(ssl_port);
+    disablePackageDrop(port);
   }
 
   mode = newmode;
@@ -300,7 +302,7 @@ app.get('/sse', function(req, res){
 });
 
 // start the maintenance server
-var mserver = app.listen(8881, function(){
+var mserver = app.listen(maintenance_port, function(){
   console.log('maintenance server listening');
 });
 
