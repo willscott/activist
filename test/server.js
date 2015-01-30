@@ -27,6 +27,7 @@ var serverDestroyer = require('server-destroy');
 var express = require('express');
 var moment = require('moment');
 var serverEvent = require('server-event');
+var exec = require('child_process').exec;
 
 var MODES = {
   NORMAL: 0,
@@ -35,7 +36,8 @@ var MODES = {
   BLOCK_404: 3,
   BLOCK_302: 4,
   BLOCK_ALL: 5,
-  CLOSE_EMPTY: 6
+  CLOSE_EMPTY: 6,
+  DROP_PACKAGE: 7
 };
 
 var MODES_VERBOSE = [
@@ -45,7 +47,8 @@ var MODES_VERBOSE = [
     'block 404',
     'block 302',
     'block all',
-    'close empty'
+    'close empty',
+    'drop package'
   ];
 
 var LOG_LEVELS = {
@@ -59,13 +62,15 @@ var sseClients = [];
 
 
 function usage() {
-  'use strict';
-  console.error("Usage: server.js [--port=8080] [--mode=0] [--root=./]");
+  'use strict'; 
+  console.error("Usage: server.js [--port=8080] [--ssl_port=port+1] [--m_port=port+2] [--mode=0] [--root=./]");
   process.exit(1);
 }
 
 var argv = minimist(process.argv.slice(2));
 var port = argv.port || 8080;
+var ssl_port = argv.ssl_port || port + 1;
+var maintenance_port = argv.m_port || port + 2;
 var mode = argv.mode || MODES.NORMAL;
 var root = argv.root || __dirname;
 
@@ -119,6 +124,34 @@ var make_block = function (res) {
           '</body></html>');
 };
 
+function enablePackageDrop(){
+  addLog(LOG_LEVELS.SERVER, "enabling package drop");
+  exec('iptables -A INPUT -p tcp --destination-port '+port+' -j DROP', function(error, stdout, stderr){
+    addLog(LOG_LEVELS.SERVER, "[EXECV STDOUT] "+stdout);
+    addLog(LOG_LEVELS.SERVER, "[EXECV STDERR] "+stderr);
+
+    if (error !== null) {
+      addLog(LOG_LEVELS.SERVER, "[EXECV ERR] "+error);
+    }else{
+      addLog(LOG_LEVELS.SERVER, "package drop enabled");      
+    }
+  });
+}
+
+function disablePackageDrop(){
+  addLog(LOG_LEVELS.SERVER, "disabling package drop");
+  exec('iptables -D INPUT -p tcp --destination-port '+port+' -j DROP', function(error, stdout, stderr){
+    addLog(LOG_LEVELS.SERVER, "[EXECV STDOUT] "+stdout);
+    addLog(LOG_LEVELS.SERVER, "[EXECV STDERR] "+stderr);
+
+    if (error !== null) {
+      addLog(LOG_LEVELS.SERVER, "[EXECV ERR] "+error);
+    }else{
+      addLog(LOG_LEVELS.SERVER, "package drop disabled");      
+    }
+  });
+}
+
 
 var onRequest = function (req, res) {
   'use strict';
@@ -133,7 +166,6 @@ var onRequest = function (req, res) {
   }
 
   if (mode === MODES.NORMAL || mode === MODES.SSL_SPOOF) {
-    addLog(LOG_LEVELS.SERVER, "["+MODES_VERBOSE[mode]+"]["+req.url+"] File not found");
     res.writeHead(200, {
       'Content-Type': 'text/html'
     });
@@ -158,8 +190,7 @@ var onRequest = function (req, res) {
     }
   } else if (mode === MODES.BLOCK_ALL) {
     return make_block(res);
-  } else if (mode === MODES.CLOSE_EMPTY) {
-    
+  } else if (mode === MODES.CLOSE_EMPTY) {    
     return res.end();
   }
 
@@ -167,7 +198,11 @@ var onRequest = function (req, res) {
   
 };
 
+
+
 var server = http.createServer(onRequest).listen(port);
+
+
 
 var secure_server;
 function restartHTTPSServer() {
@@ -199,15 +234,25 @@ function startHTTPSServer() {
   });
 };
 
+
+
 startHTTPSServer();
 
-function changeMode(newmode){
+changeMode(mode);
 
-
+function changeMode(newmode, oldmode){
 
   if (newmode === MODES.SSL_SPOOF || mode === MODES.SSL_SPOOF) {
     mode = newmode;
     restartHTTPSServer();
+  }
+
+  if(newmode === MODES.DROP_PACKAGE){
+    enablePackageDrop();
+  }
+
+  if(oldmode === MODES.DROP_PACKAGE){
+    disablePackageDrop();
   }
 
   mode = newmode;
@@ -240,8 +285,9 @@ app.get('/mode', function(req, res){
 });
 
 app.post('/mode/:mode', function(req, res){
-  changeMode(parseInt(req.params.mode));  
-  res.send(req.params.mode);
+  var oldmode = mode;
+  changeMode(parseInt(req.params.mode), mode);  
+  res.send(oldmode.toString());
 });
 
 // initialize server sent events to push logs
@@ -258,7 +304,7 @@ var mserver = app.listen(8881, function(){
   console.log('maintenance server listening');
 });
 
-addLog(LOG_LEVELS.SERVER, "initialized");
+
 
 
 
