@@ -28,6 +28,7 @@ var express = require('express');
 var moment = require('moment');
 var serverEvent = require('server-event');
 var exec = require('child_process').exec;
+var mime = require('mime');
 
 var MODES = {
   NORMAL: 0,
@@ -155,11 +156,13 @@ function disablePackageDrop(port_){
 
 var onRequest = function (req, res) {
   'use strict';
-  var modes, file;
+  var modes, file, filename, mimetype;
   
   addLog(LOG_LEVELS.CLIENT, "["+MODES_VERBOSE[mode]+"]["+req.url+"] "+req.headers['user-agent']);
   try {
-    file = fs.readFileSync(root + req.url);
+    filename = root + req.url;
+    file = fs.readFileSync(filename);
+    mimetype = mime.lookup(filename);
   } catch (e) {
     addLog(LOG_LEVELS.SERVER, "["+MODES_VERBOSE[mode]+"]["+req.url+"] File not found");
     return make_404(res);
@@ -167,7 +170,7 @@ var onRequest = function (req, res) {
 
   if (mode === MODES.NORMAL || mode === MODES.SSL_SPOOF) {
     res.writeHead(200, {
-      'Content-Type': 'text/html'
+      'Content-Type': mimetype
     });
     res.end(file);
   } else if (mode === MODES.NEVER_SEND) {
@@ -303,7 +306,9 @@ app.get('/sse', function(req, res){
 
 // start the maintenance server
 var mserver = app.listen(maintenance_port, function(){
-  console.log('maintenance server listening');
+  console.log('maintenance server listening on http://127.0.0.1:'+maintenance_port);
+  console.log('http server listening on http://127.0.0.1:'+port);
+  console.log('https server listening on http://127.0.0.1:'+ssl_port);
 });
 
 
