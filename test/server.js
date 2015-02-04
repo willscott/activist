@@ -85,8 +85,6 @@ var LOG_LEVELS = {
 };
 
 var logs = [];
-var sseClients = [];
-
 
 
 function usage() {
@@ -95,19 +93,13 @@ function usage() {
   process.exit(1);
 }
 
-
-function sendSSE(event, data) {
-  'use strict';
-  sseClients.forEach(function (client) {
-    client.sse(event, data);
-  });
-}
-
 function addLog(level, message) {
   'use strict';
   var logEntry = [moment().format(), level, message];
   logs.push(logEntry);
-  sendSSE("log", logEntry);
+  if (logs.listener) {
+    logs.listener("log", logEntry);
+  }
 }
 
 var make_404 = function (res) {
@@ -252,7 +244,6 @@ function setMode(newmode) {
   }
   console.log('Mode is now ' + mode);
 
-  sendSSE('mode', newmode.toString());
   addLog(LOG_LEVELS.SERVER, 'Mode is now ' + MODES_VERBOSE[mode]);
 }
 
@@ -276,6 +267,7 @@ if (!module.parent) {
     startHTTPSServer();
     var resp = {
       MODES: MODES,
+      MODES_VERBOSE: MODES_VERBOSE,
       stop: function () {
         if (server) {
           server.close();
@@ -284,7 +276,11 @@ if (!module.parent) {
           secure_server.destroy();
         }
       },
-      setMode: setMode
+      getMode: function () {
+        return mode;
+      },
+      setMode: setMode,
+      logs: logs
     };
     return resp;
   };
