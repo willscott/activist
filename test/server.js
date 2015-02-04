@@ -150,6 +150,7 @@ var onRequest = function (req, res) {
     try {
       file = fs.readFileSync(root + req.url);
     } catch (e) {
+      console.warn('404 - ' + root + req.url);
       return make_404(res);
     }
     if (mode === MODES.NORMAL || mode === MODES.SSL_SPOOF) {
@@ -235,20 +236,28 @@ if (!module.parent) {
   module.exports = function (options) {
     'use strict';
     setOptions(options);
+    console.log('Server listening on port', port);
     server = http.createServer(onRequest).listen(port);
     startHTTPSServer();
-    return function () {
-      server.destroy();
-      secure_server.destroy();
+    var resp = {
+      MODES: MODES,
+      stop: function () {
+        if (server) {
+          server.close();
+        }
+        if (secure_server) {
+          secure_server.destroy();
+        }
+      },
+      setMode: function (newmode) {
+        if (newmode === MODES.SSL_SPOOF || mode === MODES.SSL_SPOOF) {
+          mode = newmode;
+          restartHTTPSServer();
+        }
+        mode = newmode;
+      }
     };
-  };
-  module.exports.setMode = function (newmode) {
-    'use strict';
-    if (newmode === MODES.SSL_SPOOF || mode === MODES.SSL_SPOOF) {
-      mode = newmode;
-      restartHTTPSServer();
-    }
-    mode = newmode;
+    return resp;
   };
 }
 

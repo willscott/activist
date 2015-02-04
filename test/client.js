@@ -1,4 +1,4 @@
-/*jslint node:true */
+/*jslint node:true, nomen:true */
 /*globals describe, it, beforeEach, afterEach, before, after */
 
 describe("Activist Characterization", function () {
@@ -6,9 +6,10 @@ describe("Activist Characterization", function () {
   var expect = require('chai').expect,
     server = require('./server')({
       port: 8080,
-      root: "site/"
+      root: __dirname + '/site'
     }),
     browser = require('selenium-standalone'),
+    characterize = require('./characterizer'),
     activeSelenium;
 
   // Make sure selenium is up.
@@ -47,9 +48,10 @@ describe("Activist Characterization", function () {
     if (activeSelenium) {
       activeSelenium.kill();
     }
+    server.stop();
   });
-  
-  it("Characterizes Chrome", function () {
-    expect(true).to.equal(true);
-  });
+
+  describe("Chrome", characterize(8080, server, {
+    browserName: 'chrome'
+  }));
 });
