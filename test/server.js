@@ -24,6 +24,9 @@ var http = require('http');
 var https = require('https');
 var minimist = require('minimist');
 var serverDestroyer = require('server-destroy');
+var moment = require('moment');
+var ipTables = require('./iptables');
+var mime = require('mime');
 
 var MODES = {
   NORMAL: 0,
@@ -32,7 +35,8 @@ var MODES = {
   BLOCK_404: 3,
   BLOCK_302: 4,
   BLOCK_ALL: 5,
-  CLOSE_EMPTY: 6
+  CLOSE_EMPTY: 6,
+  DROP_PACKAGE: 7
 };
 
 var MODES_VERBOSE = [
@@ -42,9 +46,12 @@ var MODES_VERBOSE = [
     'block 404',
     'block 302',
     'block all',
-    'close empty'
+    'close empty',
+    'drop package'
   ];
 var port = 8080;
+var ssl_port = port + 1;
+var maintenance_port = port + 2;
 var mode = MODES.NORMAL;
 var root = __dirname;
 var server, secure_server;
@@ -54,6 +61,16 @@ function setOptions(opts) {
   if (opts.port) {
     port = opts.port;
   }
+  if (opts.ssl_port) {
+    ssl_port = opts.ssl_port;
+  } else {
+    ssl_port = port + 1;
+  }
+  if (opts.maintenance_port) {
+    maintenance_port = opts.maintenance_port;
+  } else {
+    maintenance_port = port + 2;
+  }
   if (opts.mode) {
     mode = opts.mode;
   }
@@ -62,11 +79,35 @@ function setOptions(opts) {
   }
 }
 
+var LOG_LEVELS = {
+  SERVER : 0,
+  CLIENT : 1
+};
+
+var logs = [];
+var sseClients = [];
+
+
 
 function usage() {
   'use strict';
-  console.error("Usage: server.js [--port=8080] [--mode=0] [--root=./]");
+  console.error("Usage: server.js [--port=8080] [--ssl_port=port+1] [--m_port=port+2] [--mode=0] [--root=./]");
   process.exit(1);
+}
+
+
+function sendSSE(event, data) {
+  'use strict';
+  sseClients.forEach(function (client) {
+    client.sse(event, data);
+  });
+}
+
+function addLog(level, message) {
+  'use strict';
+  var logEntry = [moment().format(), level, message];
+  logs.push(logEntry);
+  sendSSE("log", logEntry);
 }
 
 var make_404 = function (res) {
@@ -104,87 +145,54 @@ var make_block = function (res) {
 };
 
 var restartHTTPSServer;
-
 var onRequest = function (req, res) {
   'use strict';
-  var modes, file;
-  if (req.url === '/control') {
+  var modes, file, filename, mimetype;
+  
+  addLog(LOG_LEVELS.CLIENT, "[" + MODES_VERBOSE[mode] + "][" + req.url + "] " + req.headers['user-agent']);
+  try {
+    filename = root + req.url;
+    file = fs.readFileSync(filename);
+    mimetype = mime.lookup(filename);
+  } catch (e) {
+    addLog(LOG_LEVELS.SERVER, "[" + MODES_VERBOSE[mode] + "][" + req.url + "] File not found");
+    return make_404(res);
+  }
 
-    if (req.method === 'POST') {
-      req.on('data', function (d) {
-        var data = d.toString(),
-          newmode;
-        if (data.indexOf('mode=') === 0) {
-          newmode = parseInt(data.substr(5), 10);
-          if (newmode === MODES.SSL_SPOOF || mode === MODES.SSL_SPOOF) {
-            mode = newmode;
-            restartHTTPSServer();
-          }
-          mode = newmode;
-          console.log('Mode is now ' + mode);
-        }
-        console.log('redirecting');
-        res.writeHead(302, {
-          'Location': '/control'
-        });
-        res.end();
-      });
-
-      return;
-    }
-
+  if (mode === MODES.NORMAL || mode === MODES.SSL_SPOOF) {
     res.writeHead(200, {
-      'Content-Type': 'text/html'
+      'Content-Type': mimetype
     });
-    Object.keys(MODES).forEach(function (i_mode) {
-      modes += "<option value='" + MODES[i_mode] + "'>" + i_mode + "</option>";
+    res.end(file);
+  } else if (mode === MODES.NEVER_SEND) {
+    res.writeHead(200, {
+      'Content-Type': 'text/html',
+      'Content-Length': 2048 * 2
     });
-    res.end('<html>' +
-            'Current Mode: ' + MODES_VERBOSE[mode] +
-            '</br>' +
-            'Choose Mode: ' +
-            '<form action="/control" method="POST"><select name="mode">' +
-            modes +
-            '</select><input type="submit" /></form></html>');
-  } else {
-    try {
-      file = fs.readFileSync(root + req.url);
-    } catch (e) {
-      console.warn('404 - ' + root + req.url);
+    return;
+  } else if (mode === MODES.BLOCK_404) {
+    if (req.url === "/") {
+      return make_block(res);
+    } else {
       return make_404(res);
     }
-    if (mode === MODES.NORMAL || mode === MODES.SSL_SPOOF) {
-
-      res.writeHead(200, {
-        'Content-Type': 'text/html'
-      });
-      res.end(file);
-    } else if (mode === MODES.NEVER_SEND) {
-      res.writeHead(200, {
-        'Content-Type': 'text/html',
-        'Content-Length': 2048 * 2
-      });
-      return;
-    } else if (mode === MODES.BLOCK_404) {
-      if (req.url === "/") {
-        return make_block(res);
-      } else {
-        return make_404(res);
-      }
-    } else if (mode === MODES.BLOCK_302) {
-      if (req.url === "/") {
-        return make_block(res);
-      } else {
-        return make_302(res);
-      }
-    } else if (mode === MODES.BLOCK_ALL) {
+  } else if (mode === MODES.BLOCK_302) {
+    if (req.url === "/") {
       return make_block(res);
-    } else if (mode === MODES.CLOSE_EMPTY) {
-      return res.end();
+    } else {
+      return make_302(res);
     }
+  } else if (mode === MODES.BLOCK_ALL) {
+    return make_block(res);
+  } else if (mode === MODES.CLOSE_EMPTY) {
+    return res.end();
   }
+
+  console.log("mode not matched");
+  
 };
 
+var secure_server;
 function startHTTPSServer() {
   'use strict';
   var keys;
@@ -221,6 +229,33 @@ restartHTTPSServer = function () {
   }
 };
 
+function setMode(newmode) {
+  'use strict';
+  var needRestart = false;
+  if (newmode === MODES.SSL_SPOOF || mode === MODES.SSL_SPOOF) {
+    needRestart = true;
+  }
+
+  if (newmode === MODES.DROP_PACKAGE) {
+    ipTables.enablePackageDrop(ssl_port, addLog.bind({}, LOG_LEVELS.SERVER));
+    ipTables.enablePackageDrop(port, addLog.bind({}, LOG_LEVELS.SERVER));
+  }
+
+  if (mode === MODES.DROP_PACKAGE) {
+    ipTables.disablePackageDrop(ssl_port, addLog.bind({}, LOG_LEVELS.SERVER));
+    ipTables.disablePackageDrop(port, addLog.bind({}, LOG_LEVELS.SERVER));
+  }
+
+  mode = newmode;
+  if (needRestart) {
+    restartHTTPSServer();
+  }
+  console.log('Mode is now ' + mode);
+
+  sendSSE('mode', newmode.toString());
+  addLog(LOG_LEVELS.SERVER, 'Mode is now ' + MODES_VERBOSE[mode]);
+}
+
 if (!module.parent) {
   var argv = minimist(process.argv.slice(2));
   setOptions(argv);
@@ -249,13 +284,7 @@ if (!module.parent) {
           secure_server.destroy();
         }
       },
-      setMode: function (newmode) {
-        if (newmode === MODES.SSL_SPOOF || mode === MODES.SSL_SPOOF) {
-          mode = newmode;
-          restartHTTPSServer();
-        }
-        mode = newmode;
-      }
+      setMode: setMode
     };
     return resp;
   };

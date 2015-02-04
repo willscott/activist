@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Activist</title>
+
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <h1>Activist</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="panel panel-success">
+              <div class="panel-heading">
+                
+                  <div class="row">
+                    <div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+                      <h3 class="panel-title">Status <i class="fa fa-spinner fa-spin spinner-change-mode"></i></h3>      
+                    </div>
+                    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" >
+                      <div style="text-align:right"><a href="/api.html"><i class="fa fa-question-circle"></i> API</a></div>
+                    </div>
+                
+                </div>
+                
+              </div>
+              <div class="panel-body">
+                <select name="server_mode" id="inputServer_mode" class="form-control" >
+
+                </select>
+                
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+          <div class="panel panel-info">
+              <div class="panel-heading">
+                <h3 class="panel-title">Logs</h3>
+              </div>
+              <div class="panel-body">
+                <table class="table table-bordered table-hover table-condensed">
+                  <thead>
+                    <tr>
+                      <th width="20%">Time</th>
+                      <th width="10%">Level</th>
+                      <th>Message</th>
+                    </tr>
+                  </thead>
+                  <tbody class="log-table-body">
+                    
+                  </tbody>
+                </table>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/client.js"></script>
+
+    <script type="text/javascript">
+
+    $(function(){
+
+      var LOG_LEVELS, modes;
+
+      LOG_LEVELS = [
+        "SERVER",
+        "BROWSER"
+      ];
+
+      function addLogRow(row){
+        // compile row
+        var rowVerbose = row;
+        
+        var tr = $("<tr><td>"+rowVerbose[0]+"</td><td>"+LOG_LEVELS[rowVerbose[1]]+"</td><td>"+rowVerbose[2]+"</td></tr>");
+        $('.log-table-body').append(tr);
+      }
+
+      $('.spinner-change-mode').hide();
+
+
+
+
+
+      function loadModes(){
+        $.getJSON("/modes", {}, function(data){
+          modes = data;
+          $.each(data, function(i, mode){
+            $('#inputServer_mode').append("<option value='"+i+"'>"+mode+"</option>");
+          });
+
+          // load current mode
+          $.get("/mode", {}, function(data){
+            $('#inputServer_mode').val(data);
+          });
+        });
+      }
+
+      $('#inputServer_mode').change(function(){
+        var newMode = $('#inputServer_mode').val();
+        $('.spinner-change-mode').show();
+        $.post("/mode/"+newMode, function(){
+          $('.spinner-change-mode').hide();
+        });
+      });
+
+      function loadLogsFromServer(){
+        $.getJSON("/logs",{},function(data){
+          
+          $.each(data, function(i, row){
+            addLogRow(row);
+          });
+        });
+      }
+
+      var sse = new ServerSentEvent('sse');
+ 
+      sse.on('console', function (data) {
+          console.log('SSE', data);
+      });
+   
+      sse.on('log', function (data) {         
+          addLogRow($.parseJSON(data));
+      });
+
+      sse.on('mode', function(data){
+        console.log(data);
+        $('#inputServer_mode').val($.parseJSON(data));
+      });
+
+
+
+
+      // load logs from server
+      loadLogsFromServer();
+
+      // load modes
+      loadModes();
+
+    });
+
+
+    </script>
+
+  </body>
+</html>
