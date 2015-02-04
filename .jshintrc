@@ -61,5 +61,5 @@
     "maxerr"        : 100,
     "predef"        : [
     ],
-    "indent"        : 4
+    "indent"        : 2
 }
