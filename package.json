@@ -24,6 +24,7 @@
     "minifyify": "^4.4.0",
     "minimist": "^1.1.0",
     "mocha": "^2.1.0",
+    "selenium-standalone": "^3.3.0",
     "server-destroy": "^1.0.0"
   }
 }

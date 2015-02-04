@@ -1,4 +1,4 @@
-/*jslint node:true */
+/*jslint node:true, nomen:true */
 /**
  * A node.js web server that serves pages while attempting to mimic a variety
  * of the network conditions which may be introduced through interference.
@@ -44,20 +44,29 @@ var MODES_VERBOSE = [
     'block all',
     'close empty'
   ];
+var port = 8080;
+var mode = MODES.NORMAL;
+var root = __dirname;
+var server, secure_server;
+
+function setOptions(opts) {
+  'use strict';
+  if (opts.port) {
+    port = opts.port;
+  }
+  if (opts.mode) {
+    mode = opts.mode;
+  }
+  if (opts.root) {
+    root = opts.root;
+  }
+}
+
 
 function usage() {
   'use strict';
   console.error("Usage: server.js [--port=8080] [--mode=0] [--root=./]");
   process.exit(1);
-}
-
-var argv = minimist(process.argv.slice(2));
-var port = argv.port || 8080;
-var mode = argv.mode || MODES.NORMAL;
-var root = argv.root || __dirname;
-
-if (argv.h || argv.help) {
-  usage();
 }
 
 var make_404 = function (res) {
@@ -94,6 +103,7 @@ var make_block = function (res) {
           '</body></html>');
 };
 
+var restartHTTPSServer;
 
 var onRequest = function (req, res) {
   'use strict';
@@ -129,7 +139,7 @@ var onRequest = function (req, res) {
     Object.keys(MODES).forEach(function (i_mode) {
       modes += "<option value='" + MODES[i_mode] + "'>" + i_mode + "</option>";
     });
-    res.end('<html>'+
+    res.end('<html>' +
             'Current Mode: ' + MODES_VERBOSE[mode] +
             '</br>' +
             'Choose Mode: ' +
@@ -174,21 +184,14 @@ var onRequest = function (req, res) {
   }
 };
 
-var server = http.createServer(onRequest).listen(port);
-
-var secure_server;
-function restartHTTPSServer() {
-  if (secure_server) {
-    secure_server.destroy(function () {
-      startHTTPSServer();
-    });
-  } else {
-    startHTTPSServer();
-  }
-}
-
 function startHTTPSServer() {
+  'use strict';
   var keys;
+  if (!fs.existsSync('certs/my-server.key.pem')) {
+    console.warn('Certs not generated. Not testing HTTPS.');
+    return;
+  }
+
   if (mode === MODES.SSL_SPOOF) {
     keys = {
       key: fs.readFileSync('certs/unrooted.key.pem'),
@@ -198,12 +201,54 @@ function startHTTPSServer() {
     keys = {
       key: fs.readFileSync('certs/my-server.key.pem'),
       cert: fs.readFileSync('certs/my-server.crt.pem')
-    }
+    };
   }
   secure_server = https.createServer(keys, onRequest);
   secure_server.listen(port + 1, function () {
     serverDestroyer(secure_server);
   });
+}
+
+restartHTTPSServer = function () {
+  'use strict';
+  if (secure_server) {
+    secure_server.destroy(function () {
+      startHTTPSServer();
+    });
+  } else {
+    startHTTPSServer();
+  }
 };
 
-startHTTPSServer();
+if (!module.parent) {
+  var argv = minimist(process.argv.slice(2));
+  setOptions(argv);
+
+  if (argv.h || argv.help) {
+    usage();
+    process.exit(0);
+  } else {
+    server = http.createServer(onRequest).listen(port);
+    startHTTPSServer();
+  }
+} else {
+  module.exports = function (options) {
+    'use strict';
+    setOptions(options);
+    server = http.createServer(onRequest).listen(port);
+    startHTTPSServer();
+    return function () {
+      server.destroy();
+      secure_server.destroy();
+    };
+  };
+  module.exports.setMode = function (newmode) {
+    'use strict';
+    if (newmode === MODES.SSL_SPOOF || mode === MODES.SSL_SPOOF) {
+      mode = newmode;
+      restartHTTPSServer();
+    }
+    mode = newmode;
+  };
+}
+
