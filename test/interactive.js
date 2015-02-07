@@ -59,6 +59,6 @@ app.get('/sse', function (req, res) {
 });
 
 // start the maintenance server
-var mserver = app.listen(argv.maintenance_port, function () {
-  console.log('maintenance server listening on http://127.0.0.1:' + argv.maintenance_port);
+var mserver = app.listen(runningServer.maint_port, function () {
+  console.log('maintenance server listening on http://127.0.0.1:' + runningServer.maint_port);
 });

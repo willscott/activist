@@ -295,6 +295,9 @@ if (!module.parent) {
       getMode: function () {
         return mode;
       },
+      port: port,
+      ssl_port: ssl_port,
+      maint_port: maintenance_port,
       setMode: setMode,
       logs: logs
     };

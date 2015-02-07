@@ -39,6 +39,26 @@ module.exports = function (port, mode, opts) {
         .call(done);
     });
 
+    it('Loads 302', function (done) {
+      mode.setMode(mode.MODES.BLOCK_302);
+      client.url('http://localhost:' + port + '/index.html')
+        .refresh()
+        .source(function (err, msg) {
+          expect(msg.value).to.contain('content is unvailable');
+        })
+        .call(done);
+    });
+
+    it('Loads Block Page', function (done) {
+      mode.setMode(mode.MODES.BLOCK_ALL);
+      client.url('http://localhost:' + port + '/index.html')
+        .refresh()
+        .source(function (err, msg) {
+          expect(msg.value).to.contain('content is unvailable');
+        })
+        .call(done);
+    });
+
     it('Loads from Cache when server is off.', function (done) {
       // Make sure good cache page is there.
       mode.setMode(mode.MODES.NORMAL);
@@ -56,7 +76,7 @@ module.exports = function (port, mode, opts) {
         });
     });
 
-    it('Loads the Cache on other pages.', function (done) {
+    it('Loads the Cache on other pages when server Off', function (done) {
       // Make sure good cache page is there.
       mode.setMode(mode.MODES.NORMAL);
       client.url('http://localhost:' + port + '/index.html')
@@ -70,6 +90,20 @@ module.exports = function (port, mode, opts) {
               })
               .call(done);
           });
+        });
+    });
+
+    it('Loads the Cache on other pages when server On', function (done) {
+      // Make sure good cache page is there.
+      mode.setMode(mode.MODES.NORMAL);
+      client.url('http://localhost:' + port + '/index.html')
+        .call(function () {
+          // Wait for cache to finish.
+          client.url('http://localhost:' + port + '/page.html')
+            .source(function (err, msg) {
+              expect(msg.value).to.contain('AppCache Invoked.');
+            })
+            .call(done);
         });
     });
   };
