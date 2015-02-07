@@ -36,7 +36,8 @@ var MODES = {
   BLOCK_302: 4,
   BLOCK_ALL: 5,
   CLOSE_EMPTY: 6,
-  DROP_PACKAGE: 7
+  DROP_PACKAGE: 7,
+  OFF: 8
 };
 
 var MODES_VERBOSE = [
@@ -47,7 +48,8 @@ var MODES_VERBOSE = [
     'block 302',
     'block all',
     'close empty',
-    'drop package'
+    'drop package',
+    'off'
   ];
 var port = 8080;
 var ssl_port = port + 1;
@@ -179,9 +181,6 @@ var onRequest = function (req, res) {
   } else if (mode === MODES.CLOSE_EMPTY) {
     return res.end();
   }
-
-  console.log("mode not matched");
-  
 };
 
 var secure_server;
@@ -221,11 +220,27 @@ restartHTTPSServer = function () {
   }
 };
 
-function setMode(newmode) {
+function setMode(newmode, cb) {
   'use strict';
-  var needRestart = false;
+  var needRestart = false,
+    cbed = false;
+  if (!cb) {
+    cb = function () {};
+  }
+
   if (newmode === MODES.SSL_SPOOF || mode === MODES.SSL_SPOOF) {
     needRestart = true;
+  }
+
+  if (mode === MODES.OFF) {
+    server = http.createServer(onRequest).listen(port, cb);
+    serverDestroyer(server);
+    cbed = true;
+  }
+  if (newmode === MODES.OFF) {
+    server.destroy(cb);
+    cbed = true;
+    server = null;
   }
 
   if (newmode === MODES.DROP_PACKAGE) {
@@ -239,11 +254,11 @@ function setMode(newmode) {
   }
 
   mode = newmode;
-  if (needRestart) {
-    restartHTTPSServer();
+  if (!cbed && needRestart) {
+    restartHTTPSServer(cb);
+  } else if (!cbed) {
+    cb();
   }
-  console.log('Mode is now ' + mode);
-
   addLog(LOG_LEVELS.SERVER, 'Mode is now ' + MODES_VERBOSE[mode]);
 }
 
@@ -264,13 +279,14 @@ if (!module.parent) {
     setOptions(options);
     console.log('Server listening on port', port);
     server = http.createServer(onRequest).listen(port);
+    serverDestroyer(server);
     startHTTPSServer();
     var resp = {
       MODES: MODES,
       MODES_VERBOSE: MODES_VERBOSE,
       stop: function () {
         if (server) {
-          server.close();
+          server.destroy();
         }
         if (secure_server) {
           secure_server.destroy();

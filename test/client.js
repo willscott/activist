@@ -52,6 +52,7 @@ describe("Activist Characterization", function () {
   });
 
   describe("Chrome", characterize(8080, server, {
-    browserName: 'chrome'
+    browserName: 'chrome',
+    applicationCacheEnabled: true
   }));
 });

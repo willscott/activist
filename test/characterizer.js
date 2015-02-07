@@ -38,5 +38,39 @@ module.exports = function (port, mode, opts) {
         })
         .call(done);
     });
+
+    it('Loads from Cache when server is off.', function (done) {
+      // Make sure good cache page is there.
+      mode.setMode(mode.MODES.NORMAL);
+      client.url('http://localhost:' + port + '/index.html')
+        .call(function () {
+          // Wait for cache to finish.
+          mode.setMode(mode.MODES.OFF, function () {
+            client.url('http://localhost:' + port + '/index.html')
+              .refresh()
+              .source(function (err, msg) {
+                expect(msg.value).to.contain('AppCache Invoked.');
+              })
+              .call(done);
+          });
+        });
+    });
+
+    it('Loads the Cache on other pages.', function (done) {
+      // Make sure good cache page is there.
+      mode.setMode(mode.MODES.NORMAL);
+      client.url('http://localhost:' + port + '/index.html')
+        .call(function () {
+          // Wait for cache to finish.
+          mode.setMode(mode.MODES.OFF, function () {
+            client.url('http://localhost:' + port + '/page.html')
+              .refresh()
+              .source(function (err, msg) {
+                expect(msg.value).to.contain('AppCache Invoked.');
+              })
+              .call(done);
+          });
+        });
+    });
   };
 };
