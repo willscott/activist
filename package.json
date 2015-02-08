@@ -15,6 +15,7 @@
     "url": "https://github.com/willscott/activist"
   },
   "devDependencies": {
+    "body-parser": "^1.11.0",
     "chai": "^1.10.0",
     "express": "^4.11.1",
     "freedom": "~0.3.2",

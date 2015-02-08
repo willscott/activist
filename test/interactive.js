@@ -6,6 +6,7 @@
  */
 
 var express = require('express');
+var bodyParser = require('body-parser');
 var minimist = require('minimist');
 var server = require('./server');
 var serverEvent = require('server-event');
@@ -29,6 +30,10 @@ var app = express();
 // serve static files from 
 app.use('/', express['static'](__dirname + "/backend"));
 
+// handle post requests
+app.use(bodyParser.urlencoded({extended:false}));
+
+
 // return collected logs as json object
 app.get('/logs', function (req, res) {
   res.send(JSON.stringify(runningServer.logs));
@@ -44,8 +49,21 @@ app.get('/mode', function (req, res) {
   res.send(runningServer.getMode().toString());
 });
 
+// return current root
+app.get('/root', function (req, res){
+  res.send(runningServer.getRoot());
+});
+
+// set new root
+app.post('/root', function(req, res){
+  runningServer.setRoot(req.body.root);
+  sendSSE('root', req.body.root);
+  res.send(req.body.root);
+});
+
 app.post('/mode/:mode', function (req, res) {
   runningServer.setMode(parseInt(req.params.mode, 10));
+  sendSSE('mode', runningServer.getMode().toString());
   res.send(req.params.mode);
 });
 

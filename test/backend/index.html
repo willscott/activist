@@ -29,7 +29,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
           <div class="panel panel-success">
               <div class="panel-heading">
                 
@@ -49,6 +49,18 @@
 
                 </select>
                 
+              </div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+          <div class="panel panel-success">
+              <div class="panel-heading">
+                      <h3 class="panel-title">Server Root <i class="fa fa-spinner fa-spin spinner-change-root"></i></h3>      
+                </div>
+                
+              
+              <div class="panel-body">
+                <input type="text" name="server_root" id="inputServer_root" class="form-control" value="" pattern="" title="">
               </div>
           </div>
         </div>
@@ -131,14 +143,39 @@
         });
       });
 
+
+
       function loadLogsFromServer(){
-        $.getJSON("/logs",{},function(data){
-          
+        $.getJSON("/logs",{},function(data){          
           $.each(data, function(i, row){
             addLogRow(row);
           });
         });
       }
+
+      function loadRoot(){        
+        $.get("/root", {}, function(data){
+          $('.spinner-change-root').hide();
+          $('#inputServer_root').val(data);
+        });
+      }
+
+      $('#inputServer_root').keydown(function(e){
+        
+        if(e.which == 13){
+          $('.spinner-change-root').show();
+          $.post("/root", {'root':$('#inputServer_root').val()}, function(data){
+            $('.spinner-change-root').hide();
+          });
+        }
+
+        if(e.which == 27){
+          loadRoot();
+        }
+      });
+
+
+
 
       var sse = new ServerSentEvent('sse');
  
@@ -151,8 +188,11 @@
       });
 
       sse.on('mode', function(data){
-        console.log(data);
         $('#inputServer_mode').val($.parseJSON(data));
+      });
+
+      sse.on('root', function(data){
+        $('#inputServer_root').val($.parseJSON(data));
       });
 
 
@@ -163,6 +203,9 @@
 
       // load modes
       loadModes();
+
+      // load current root
+      loadRoot();
 
     });
 
