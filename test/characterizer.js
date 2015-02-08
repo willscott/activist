@@ -8,8 +8,8 @@ module.exports = function (port, mode, opts) {
     client;
 
   return function () {
+    this.timeout(20000);
     before(function (done) {
-      this.timeout(20000);
       client = driver.remote({
         desiredCapabilities: opts
       });
@@ -19,6 +19,7 @@ module.exports = function (port, mode, opts) {
     after(function (done) {
       client.end(done);
     });
+
 
     it('Loads Normally', function (done) {
       mode.setMode(mode.MODES.NORMAL);
@@ -44,7 +45,7 @@ module.exports = function (port, mode, opts) {
       client.url('http://localhost:' + port + '/page.html')
         .source(function (err, msg) {
           setTimeout(function () {
-            expect(msg.value).to.contain('content is unvailable');
+            expect(msg.value).to.contain('content is unavailable');
             done();
           }, 10000);
         });
@@ -56,7 +57,7 @@ module.exports = function (port, mode, opts) {
       client.url('http://localhost:' + port + '/index.html')
         .refresh()
         .source(function (err, msg) {
-          expect(msg.value).to.contain('content is unvailable');
+          expect(msg.value).to.contain('content is unavailable');
         })
         .call(done);
     });
