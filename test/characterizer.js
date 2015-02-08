@@ -41,12 +41,14 @@ module.exports = function (port, mode, opts) {
 
     it('Loads 302', function (done) {
       mode.setMode(mode.MODES.BLOCK_302);
-      client.url('http://localhost:' + port + '/index.html')
-        .refresh()
+      client.url('http://localhost:' + port + '/page.html')
         .source(function (err, msg) {
-          expect(msg.value).to.contain('content is unvailable');
-        })
-        .call(done);
+          setTimeout(function () {
+            expect(msg.value).to.contain('content is unvailable');
+            done();
+          }, 10000);
+        });
+//        .call(done);
     });
 
     it('Loads Block Page', function (done) {

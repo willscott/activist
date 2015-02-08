@@ -23,6 +23,7 @@ var fs = require('fs');
 var http = require('http');
 var https = require('https');
 var minimist = require('minimist');
+var net = require('net');
 var serverDestroyer = require('server-destroy');
 var moment = require('moment');
 var ipTables = require('./iptables');
@@ -141,19 +142,25 @@ var make_block = function (res) {
 var restartHTTPSServer;
 var onRequest = function (req, res) {
   'use strict';
-  var modes, file, filename, mimetype;
+  var modes, file, filename, mimetype, notfound = false;
   
   addLog(LOG_LEVELS.CLIENT, "[" + MODES_VERBOSE[mode] + "][" + req.url + "] " + req.headers['user-agent']);
   try {
+    if (req.url === '' || req.url === '/') {
+      req.url = 'index.html';
+    }
     filename = root + req.url;
     file = fs.readFileSync(filename);
     mimetype = mime.lookup(filename);
   } catch (e) {
     addLog(LOG_LEVELS.SERVER, "[" + MODES_VERBOSE[mode] + "][" + req.url + "] File not found");
-    return make_404(res);
+    notfound = true;
   }
 
   if (mode === MODES.NORMAL || mode === MODES.SSL_SPOOF) {
+    if (notfound) {
+      return make_404(res);
+    }
     res.writeHead(200, {
       'Content-Type': mimetype
     });
@@ -165,23 +172,34 @@ var onRequest = function (req, res) {
     });
     return;
   } else if (mode === MODES.BLOCK_404) {
-    if (req.url === "/") {
+    if (req.url === "index.html") {
       return make_block(res);
     } else {
       return make_404(res);
     }
   } else if (mode === MODES.BLOCK_302) {
-    if (req.url === "/") {
+    if (req.url === "index.html") {
       return make_block(res);
     } else {
       return make_302(res);
     }
   } else if (mode === MODES.BLOCK_ALL) {
     return make_block(res);
-  } else if (mode === MODES.CLOSE_EMPTY) {
-    return res.end();
   }
 };
+
+// A TCP server on port that closes TCP session with no HTTP headers after requests.
+function startSocketServer() {
+  'use strict';
+  server = net.createServer(function (c) {
+    c.on('data', function (d) {
+      if (d.toString().indexOf('\r\n\r\n') > -1) {
+        c.end();
+      }
+    });
+  }).listen(port);
+  serverDestroyer(server);
+}
 
 var secure_server;
 function startHTTPSServer() {
@@ -232,13 +250,25 @@ function setMode(newmode, cb) {
     needRestart = true;
   }
 
-  if (mode === MODES.OFF) {
+  if ((mode === MODES.OFF ||
+      mode === MODES.CLOSE_EMPTY) && (
+      newmode !== MODES.OFF &&
+      newmode !== MODES.CLOSE_EMPTY
+    )) {
+    if (mode === MODES.CLOSE_EMPTY) {
+      server.destroy();
+    }
     server = http.createServer(onRequest).listen(port, cb);
     serverDestroyer(server);
     cbed = true;
   }
-  if (newmode === MODES.OFF) {
-    server.destroy(cb);
+  if (newmode === MODES.OFF ||
+      newmode === MODES.CLOSE_EMPTY) {
+    if (newmode === MODES.OFF) {
+      server.destroy(cb);
+    } else {
+      server.destroy(startSocketServer);
+    }
     cbed = true;
     server = null;
   }
@@ -261,6 +291,7 @@ function setMode(newmode, cb) {
   }
   addLog(LOG_LEVELS.SERVER, 'Mode is now ' + MODES_VERBOSE[mode]);
 }
+
 
 if (!module.parent) {
   var argv = minimist(process.argv.slice(2));

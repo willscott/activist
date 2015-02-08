@@ -39,5 +39,6 @@ module.exports = function (grunt) {
     'browserify'
   ]);
 
+  grunt.registerTask('test', ['jshint', 'mochaTest']);
   grunt.registerTask('default', ['activist']);
 };
