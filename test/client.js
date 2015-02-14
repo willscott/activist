@@ -6,7 +6,8 @@ describe("Activist Characterization", function () {
   var expect = require('chai').expect,
     server = require('./server')({
       port: 8080,
-      root: __dirname + '/site'
+      root: __dirname + '/site',
+      certs: __dirname + '/certs'
     }),
     browser = require('selenium-standalone'),
     characterize = require('./characterizer'),
@@ -51,8 +52,16 @@ describe("Activist Characterization", function () {
     server.stop();
   });
 
+  /*
   describe("Chrome", characterize(8080, server, {
     browserName: 'chrome',
     applicationCacheEnabled: true
   }));
+  */
+
+  describe("Firefox", characterize(8080, server, {
+    browserName: 'firefox',
+    applicationCacheEnabled: true
+  }));
+
 });
