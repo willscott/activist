@@ -58,11 +58,15 @@ var maintenance_port = port + 2;
 var mode = MODES.NORMAL;
 var root = __dirname;
 var server, secure_server;
+var certs = root + '/certs';
 
 function setOptions(opts) {
   'use strict';
   if (opts.port) {
     port = opts.port;
+  }
+  if (opts.certs) {
+    certs = opts.certs;
   }
   if (opts.ssl_port) {
     ssl_port = opts.ssl_port;
@@ -159,7 +163,7 @@ var restartHTTPSServer;
 var onRequest = function (req, res) {
   'use strict';
   var modes, file, filename, mimetype, notfound = false;
-  
+
   addLog(LOG_LEVELS.CLIENT, "[" + MODES_VERBOSE[mode] + "][" + req.url + "] " + req.headers['user-agent']);
   try {
     if (req.url === '' || req.url === '/') {
@@ -221,20 +225,20 @@ var secure_server;
 function startHTTPSServer() {
   'use strict';
   var keys;
-  if (!fs.existsSync('certs/my-server.key.pem')) {
+  if (!fs.existsSync(certs + '/my-server.key.pem')) {
     console.warn('Certs not generated. Not testing HTTPS.');
     return;
   }
 
   if (mode === MODES.SSL_SPOOF) {
     keys = {
-      key: fs.readFileSync('certs/unrooted.key.pem'),
-      cert: fs.readFileSync('certs/unrooted.crt.pem')
+      key: fs.readFileSync(certs + '/unrooted.key.pem'),
+      cert: fs.readFileSync(certs + '/unrooted.crt.pem')
     };
   } else {
     keys = {
-      key: fs.readFileSync('certs/my-server.key.pem'),
-      cert: fs.readFileSync('certs/my-server.crt.pem')
+      key: fs.readFileSync(certs + '/my-server.key.pem'),
+      cert: fs.readFileSync(certs + '/my-server.crt.pem')
     };
   }
   secure_server = https.createServer(keys, onRequest);
@@ -353,4 +357,3 @@ if (!module.parent) {
     return resp;
   };
 }
-
