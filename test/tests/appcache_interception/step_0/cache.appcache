@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# version 0
+
+CACHE:
+aactivist.js
+index.html
+
+FALLBACK:
+/ fallback.html
+
+NETWORK:
+*
