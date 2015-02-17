@@ -1,7 +1,7 @@
 CACHE MANIFEST
 
-FALLBACK:
-/ iframe.html
-
 NETWORK:
 *
+
+FALLBACK:
+/ /iframe.html
