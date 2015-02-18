@@ -28,6 +28,7 @@ var serverDestroyer = require('server-destroy');
 var moment = require('moment');
 var ipTables = require('./iptables');
 var mime = require('mime');
+var url = require('url');
 
 var MODES = {
   NORMAL: 0,
@@ -162,18 +163,24 @@ var make_block = function (res) {
 var restartHTTPSServer;
 var onRequest = function (req, res) {
   'use strict';
-  var modes, file, filename, mimetype, notfound = false;
+  var modes, file, filename, mimetype, url_parts, notfound = false;
 
   addLog(LOG_LEVELS.CLIENT, "[" + MODES_VERBOSE[mode] + "][" + req.url + "] " + req.headers['user-agent']);
   try {
     if (req.url === '' || req.url === '/') {
       req.url = 'index.html';
     }
-    filename = root + req.url;
+
+    url_parts = url.parse(req.url, true);
+    console.log(url_parts);
+
+
+    filename = root + url_parts.pathname;
+    
     file = fs.readFileSync(filename);
     mimetype = mime.lookup(filename);
   } catch (e) {
-    addLog(LOG_LEVELS.SERVER, "[" + MODES_VERBOSE[mode] + "][" + req.url + "] File not found");
+    addLog(LOG_LEVELS.SERVER, "[" + MODES_VERBOSE[mode] + "][" + filename + "] File not found");
     notfound = true;
   }
 
