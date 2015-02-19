@@ -220,6 +220,13 @@ function startSocketServer() {
     });
   }).listen(port);
   serverDestroyer(server);
+
+  secure_server = net.createServer(function (c) {
+    c.on('data', function (d) {
+      c.end();
+    });
+  }).listen(port + 1);
+  serverDestroyer(secure_server);
 }
 
 var secure_server;
