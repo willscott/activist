@@ -110,14 +110,15 @@ function addLog(level, message) {
 }
 
 // can be used to simulate DNS forwarding
-function setRoot(new_root){
+function setRoot(new_root) {
   'use strict';
   var old_root = root;
   root = new_root;
-  addLog(LOG_LEVELS.SERVER, "changed root from '"+old_root+"' to '"+root+"'");
+  addLog(LOG_LEVELS.SERVER, "changed root from '" + old_root + "' to '" + root + "'");
 }
 
-function getRoot(){
+function getRoot() {
+  'use strict';
   return root;
 }
 
@@ -346,8 +347,8 @@ if (!module.parent) {
       getMode: function () {
         return mode;
       },
-      setRoot:setRoot,
-      getRoot:getRoot,
+      setRoot: setRoot,
+      getRoot: getRoot,
       port: port,
       ssl_port: ssl_port,
       maint_port: maintenance_port,
