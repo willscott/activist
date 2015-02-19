@@ -3,5 +3,6 @@ CACHE MANIFEST
 FALLBACK:
 / iframe.html
 
-NETWORK:
-*
+#having this breaks firefox:
+#NETWORK:
+#*
