@@ -293,8 +293,10 @@ function setMode(newmode, cb) {
   if (newmode === MODES.OFF ||
       newmode === MODES.CLOSE_EMPTY) {
     if (newmode === MODES.OFF) {
+      secure_server.destroy();
       server.destroy(cb);
     } else {
+      secure_server.destroy();
       server.destroy(startSocketServer);
     }
     cbed = true;
