@@ -1,8 +1,5 @@
 CACHE MANIFEST
 
-CACHE:
-iframe.html
-
 FALLBACK:
 / iframe.html
 
