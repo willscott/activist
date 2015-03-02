@@ -23,22 +23,27 @@ function interpret(callback) {
   }
   
   if (concensus[0]) {
-    return callback('Connected');
-  } else if (concensus[1] || concensus[2]) {
+    return callback('Connected', true);
+  } else if ((concensus[1] || concensus[2]) &&
+             results[0].length > 0) {
     return callback('Blocked');
-  } else {
+  } else if (results[1].length > 1) {
     return callback('Disconnected');
+  } else {
+    return callback('Pending');
   }
 }
 
 function finishDispatch() {
-  var i;
-  if (!pending.lenth) {
-    for (i = 0; i < callbacks.length; i += 1) {
-      interpret(callbacks[i]);
+  interpret(function (state) {
+    var i;
+    if (state !=== 'Pending') {
+      for (i = 0; i < callbacks.length; i += 1) {
+        callbacks[i](state, confidence);
+      }
+      callbacks = [];
     }
-    callbacks = [];
-  }
+  });
 }
 
 function cleanup(xhr) {
@@ -82,17 +87,33 @@ function timeout(category, xhr) {
   }
 }
 
-function dispatch(url, cat) {
-  var xhr = new XMLHttpRequest();
-  pending.push(xhr);
-  xhr.addEventListener("progress", progress.bind({}, cat, xhr), false);
-  xhr.addEventListener("load", done.bind({}, cat, xhr), false);
-  xhr.addEventListener("error", error.bind({}, cat, xhr), false);
-  xhr.timeout = waittime;
-  xhr.ontimeout = timeout.bind({}, cat, xhr);
+function dispatch(url, cat, acao) {
+  // If we can do an XHR to the url.
+  if (acao) {
+    var xhr = new XMLHttpRequest();
+    pending.push(xhr);
+    xhr.addEventListener("progress", progress.bind({}, cat, xhr), false);
+    xhr.addEventListener("load", done.bind({}, cat, xhr), false);
+    xhr.addEventListener("error", error.bind({}, cat, xhr), false);
+    xhr.timeout = waittime;
+    xhr.ontimeout = timeout.bind({}, cat, xhr);
 
-  xhr.open("HEAD", url);
-  xhr.send();
+    xhr.open("GET", url);
+    xhr.send();
+  } else {
+    var img = document.createElement('img');
+    img.addEventListener("load", done.bind({}, cat, img), false);
+    img.addEventListener("error", error.bind({}, cat, img), false);
+    pending.push(img);
+    img.style.width = img.style.height = 0;
+    if (document && document.body) {
+      document.head.appendChild(img);
+    } else {
+      window.addEventListener('load', function (img) {
+        doucment.head.appendChild(img);
+      }.bind({}, img));
+    }
+  }
 }
 
 
@@ -113,12 +134,16 @@ function getStatus(callback) {
     run = true;
     // Signals used for status:
     // 1. XHR for /activist.js
-    dispatch('/activist.js', 0);
+    dispatch('/activist.js', 0, true);
     // 2. XHR for [safe domains]
     results[1] = [navigator.onLine];
-    dispatch('http://www.google.com', 1);
+    dispatch('https://www.google.com/favicon.ico', 1, false);
+    dispatch('https://www.baidu.com/favicon.ico', 1, false);
+    dispatch('https://www.yandex.ru/favicon.ico', 1, false);
+    dispatch('https://www.bbc.co.uk/favicon.ico', 1, false);
+    dispatch('https://www.sfr.fr/favicon.ico', 1, false);
     // 3. XHR for [friendly domains]
-    dispatch('http://www.p2pbr.com', 2);
+    dispatch('https://www.p2pbr.com/clientinfo.js', 2, true);
   }
   callbacks.push(callback);
 }
