@@ -134,7 +134,7 @@ function getStatus(callback) {
     run = true;
     // Signals used for status:
     // 1. XHR for /activist.js
-    dispatch('/activist.js', 0, true);
+    dispatch('/activist.js?rand=' + Math.random(), 0, true);
     // 2. XHR for [safe domains]
     results[1] = [navigator.onLine];
     dispatch('https://www.google.com/favicon.ico', 1, false);
