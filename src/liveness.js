@@ -1,4 +1,5 @@
-/*global define, navigator, console, XMLHttpRequest, setTimeout*/
+/*jslint node:true*/
+/*global navigator, console, XMLHttpRequest, setTimeout*/
 var waittime = 1000,
   run = false,
   callbacks = [],
@@ -6,6 +7,7 @@ var waittime = 1000,
   results = {0: [], 1: [], 2: []};
 
 function interpret(callback) {
+  'use strict';
   var concensus = [0.0, 0.0, 0.0],
     i = 0,
     j = 0;
@@ -23,7 +25,7 @@ function interpret(callback) {
   }
   
   if (concensus[0]) {
-    return callback('Connected', true);
+    return callback('Connected');
   } else if ((concensus[1] || concensus[2]) &&
              results[0].length > 0) {
     return callback('Blocked');
@@ -35,11 +37,12 @@ function interpret(callback) {
 }
 
 function finishDispatch() {
+  'use strict';
   interpret(function (state) {
     var i;
-    if (state !=== 'Pending') {
+    if (state !== 'Pending') {
       for (i = 0; i < callbacks.length; i += 1) {
-        callbacks[i](state, confidence);
+        callbacks[i](state);
       }
       callbacks = [];
     }
@@ -47,6 +50,7 @@ function finishDispatch() {
 }
 
 function cleanup(xhr) {
+  'use strict';
   var index = pending.indexOf(xhr);
   if (index > -1) {
     pending.splice(index, 1);
@@ -54,12 +58,14 @@ function cleanup(xhr) {
 }
 
 function done(category, xhr) {
+  'use strict';
   results[category].push(1);
   cleanup(xhr);
   finishDispatch();
 }
 
 function progress(category, xhr, event) {
+  'use strict';
   if (event.lengthComputable && event.loaded > 0) {
     results[category].push(1);
     xhr.abort();
@@ -69,6 +75,7 @@ function progress(category, xhr, event) {
 }
 
 function error(category, xhr, err) {
+  'use strict';
   cleanup(xhr);
   console.warn(err);
   if (err.message.contains("INVALID")) {
@@ -80,6 +87,7 @@ function error(category, xhr, err) {
 }
 
 function timeout(category, xhr) {
+  'use strict';
   if (pending.indexOf(xhr) > -1) {
     cleanup(xhr);
     results[category].push(0);
@@ -88,30 +96,32 @@ function timeout(category, xhr) {
 }
 
 function dispatch(url, cat, acao) {
+  'use strict';
   // If we can do an XHR to the url.
+  var req;
   if (acao) {
-    var xhr = new XMLHttpRequest();
-    pending.push(xhr);
-    xhr.addEventListener("progress", progress.bind({}, cat, xhr), false);
-    xhr.addEventListener("load", done.bind({}, cat, xhr), false);
-    xhr.addEventListener("error", error.bind({}, cat, xhr), false);
-    xhr.timeout = waittime;
-    xhr.ontimeout = timeout.bind({}, cat, xhr);
+    req = new XMLHttpRequest();
+    pending.push(req);
+    req.addEventListener("progress", progress.bind({}, cat, req), false);
+    req.addEventListener("load", done.bind({}, cat, req), false);
+    req.addEventListener("error", error.bind({}, cat, req), false);
+    req.timeout = waittime;
+    req.ontimeout = timeout.bind({}, cat, req);
 
-    xhr.open("GET", url);
-    xhr.send();
+    req.open("GET", url);
+    req.send();
   } else {
-    var img = document.createElement('img');
-    img.addEventListener("load", done.bind({}, cat, img), false);
-    img.addEventListener("error", error.bind({}, cat, img), false);
-    pending.push(img);
-    img.style.width = img.style.height = 0;
+    req = document.createElement('img');
+    req.addEventListener("load", done.bind({}, cat, req), false);
+    req.addEventListener("error", error.bind({}, cat, req), false);
+    pending.push(req);
+    req.style.width = req.style.height = 0;
     if (document && document.body) {
-      document.head.appendChild(img);
+      document.head.appendChild(req);
     } else {
       window.addEventListener('load', function (img) {
-        doucment.head.appendChild(img);
-      }.bind({}, img));
+        document.head.appendChild(img);
+      }.bind({}, req));
     }
   }
 }
@@ -119,14 +129,16 @@ function dispatch(url, cat, acao) {
 
 /*
  * Class determining the current connectivity status of the domain.
- * Usage: require('liveness').getStatus(callback)
+ * Usage: require('liveness').getStatus([], callback)
  * Status passed to your callback will be one of:
  *   Connected - Domain appears accessible.
  *   Disconnected - Internet appears unavailable.
  *   Blocked - This domain appears unavailable, but others are.
+ * @param {Array} state Known request states influencing this call for status.
  * @param {Function} callback Function to call once status is determined.
  */
-function getStatus(callback) {
+function getStatus(state, callback) {
+  'use strict';
   if (run && !callbacks.length) {
     return interpret(callback);
   }
@@ -134,6 +146,7 @@ function getStatus(callback) {
     run = true;
     // Signals used for status:
     // 1. XHR for /activist.js
+    results[0] = state;
     dispatch('/activist.js?rand=' + Math.random(), 0, true);
     // 2. XHR for [safe domains]
     results[1] = [navigator.onLine];
