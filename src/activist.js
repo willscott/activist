@@ -35,7 +35,10 @@ activist.serve = function () {
 
 activist.render = function (status) {
   'use strict';
-  console.log('Status is: ', status);
+  console.log('Activist believes your connection is: ', status);
+  if (status === "Blocked") {
+    require('./render').render();
+  }
 };
 
 if (typeof document !== 'undefined') {
