@@ -23,7 +23,8 @@ function interpret(callback) {
       concensus[i] = 0;
     }
   }
-  
+
+  console.log('Activist.js Concensus', concensus);
   if (concensus[0]) {
     return callback('Connected');
   } else if ((concensus[1] || concensus[2]) &&
@@ -57,9 +58,13 @@ function cleanup(xhr) {
   }
 }
 
-function done(category, xhr) {
+function done(category, xhr, cb) {
   'use strict';
-  results[category].push(1);
+  if (cb(xhr.responseText)) {
+    results[category].push(1);
+  } else {
+    results[category].push(0);
+  }
   cleanup(xhr);
   finishDispatch();
 }
@@ -78,7 +83,7 @@ function error(category, xhr, err) {
   'use strict';
   cleanup(xhr);
   console.warn(err);
-  if (err.message.contains("INVALID")) {
+  if (err.message && err.message.contains("INVALID")) {
     results[category].push(1);
   } else {
     results[category].push(0);
@@ -95,20 +100,20 @@ function timeout(category, xhr) {
   }
 }
 
-function dispatch(url, cat, acao) {
+function dispatch(url, cat, callback) {
   'use strict';
   // If we can do an XHR to the url.
   var req;
-  if (acao) {
+  if (callback) {
     req = new XMLHttpRequest();
     pending.push(req);
     req.addEventListener("progress", progress.bind({}, cat, req), false);
-    req.addEventListener("load", done.bind({}, cat, req), false);
+    req.addEventListener("load", done.bind({}, cat, req, callback), false);
     req.addEventListener("error", error.bind({}, cat, req), false);
     req.timeout = waittime;
     req.ontimeout = timeout.bind({}, cat, req);
 
-    req.open("GET", url);
+    req.open("HEAD", url);
     req.send();
   } else {
     req = document.createElement('img');
@@ -147,7 +152,9 @@ function getStatus(state, callback) {
     // Signals used for status:
     // 1. XHR for /activist.js
     results[0] = state;
-    dispatch('/activist.js?rand=' + Math.random(), 0, true);
+    dispatch('/activist.js?rand=' + Math.random(), 0, function (script) {
+      return script.indexOf("This-is-Network-Interference!") > 0;
+    });
     // 2. XHR for [safe domains]
     results[1] = [navigator.onLine];
     dispatch('https://www.google.com/favicon.ico', 1, false);
@@ -156,7 +163,10 @@ function getStatus(state, callback) {
     dispatch('https://www.bbc.co.uk/favicon.ico', 1, false);
     dispatch('https://www.sfr.fr/favicon.ico', 1, false);
     // 3. XHR for [friendly domains]
-    dispatch('https://www.p2pbr.com/clientinfo.js', 2, true);
+    dispatch('https://www.p2pbr.com/clientinfo.js?l' + window.location.href,
+             2, function (script) {
+        return script.indexOf("down") > -1;
+      });
   }
   callbacks.push(callback);
 }

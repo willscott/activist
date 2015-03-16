@@ -10,7 +10,12 @@ exports.render = function () {
       background: "#d14836",
       color: "white",
       fontWeight: "700",
-      textAlign: "center"
+      textAlign: "center",
+      top: 0,
+      left: 0,
+      width: "100%",
+      padding: "10px",
+      fontFamily: "sans-serif"
     },
     prop;
   hero.innerText = "Your connection to this site was disrupted by your network. Consider an alternative method of access.";
