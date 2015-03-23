@@ -1,0 +1,17 @@
+{
+  "name": "activist-builder",
+  "version": "0.0.0",
+  "description": "A web interface to configure and build activist",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "activist"
+  ],
+  "dependencies": {
+    "activist": "^0.0.1"
+  },
+  "author": "Will Scott <willscott@gmail.com> (https://wills.co.tt)",
+  "license": "BSD-2-Clause"
+}
