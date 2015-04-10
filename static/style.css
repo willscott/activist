@@ -1,0 +1,64 @@
+html,body {
+  margin: 0;
+  padding: 0;
+  font-weight: 300;
+  font-family: sans-serif;
+  position: relative;
+}
+
+body {
+  padding-top:75px;
+}
+
+header,footer {
+  background: black;
+  color: white;
+  width: 100%;
+  text-align: center;
+  z-index: 2;
+}
+header,footer a {
+  color: white;
+}
+header {
+  position: fixed;
+  top: 0;
+  height: 75px;
+}
+footer {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-size: 0.8em;
+}
+
+h1,h2,h3 {
+  font-weight: normal;
+}
+
+#theresmore {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  background: rgba(0,0,0, 0.3);
+  border-radius: 100%;
+  display: block;
+  width: 50px;
+  height: 50px;
+  font-weight: 100;
+  transform: rotate(90deg);
+}
+
+section {
+  position: relative;
+  height: 400pt;
+  height: 100vh;
+}
+
+carousel {
+  position: relative;
+}
+
+carousel > div {
+  display: inline-block;
+  height: 200pt;
+}
