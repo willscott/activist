@@ -3,6 +3,8 @@
   "description": "resilience to network interference",
   "version": "0.0.1",
   "homepage": "https://github.com/willscott/activist",
+  "main": "activist.js",
+  "browser": "activist.js",
   "bugs": {
     "url": "https://github.com/willscott/activist/issues",
     "email": "willscott@gmail.com"
