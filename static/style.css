@@ -133,13 +133,24 @@ section#why {
   background-position: 50% 75%, center;
 }
 
-section#why h2 {
+section h2 {
   background: rgba(0,0,0,0.7);
+  padding: 50px 100px;
+  color: white;
+  font-size: 24pt;
+  font-weight: 100;
+}
+
+section#why h2 {
   padding: 100px;
   padding-bottom: calc(50vh - 250px);
-  color: white;
   font-size: 4vw;
 }
+
+section#what h2 small {
+  font-size: 16pt;
+}
+
 
 carousel {
   position: relative;
