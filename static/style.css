@@ -4,7 +4,91 @@ html,body {
   font-weight: 300;
   font-family: sans-serif;
   position: relative;
+  overflow: hidden;
+  -webkit-transition: opacity 400ms;
+  -moz-transition: opacity 400ms;
+  transition: opacity 400ms;
+  display: block;
+  position: static;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
+
+.onepage-wrapper {
+  display: block;
+  position: relative;
+  padding: 0;
+  -webkit-transform-style: preserve-3d;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+.onepage-wrapper .ops-section {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.onepage-pagination {
+  position: absolute;
+  right: 0px;
+  top: 50%;
+  z-index: 5;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.onepage-pagination li {
+  padding: 0;
+  text-align: center;
+}
+.onepage-pagination li a{
+  padding: 10px;
+  padding-right: 13px;
+  width: 4px;
+  height: 4px;
+  display: block;
+  background: rgba(255,255,255,0.7);
+}
+.onepage-pagination li a:before{
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(128,128,128,0.85);
+  border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+}
+.onepage-pagination li a.active:before{
+  width: 10px;
+  height: 10px;
+  background: none;
+  border: 1px solid #888;
+  margin-top: -4px;
+  left: 8px;
+}
+.disabled-onepage-scroll, .disabled-onepage-scroll .wrapper {
+  overflow: auto;
+}
+.disabled-onepage-scroll .onepage-wrapper .ops-section {
+  position: relative !important;
+  top: auto !important;
+}
+.disabled-onepage-scroll .onepage-wrapper {
+  -webkit-transform: none !important;
+  -moz-transform: none !important;
+  transform: none !important;
+  -ms-transform: none !important;
+  min-height: 100%;
+}
+.disabled-onepage-scroll .onepage-pagination {
+  display: none;
+}
+body.disabled-onepage-scroll, .disabled-onepage-scroll .onepage-wrapper, html {
+  position: inherit;
+}
+
 
 body {
   padding-top:75px;
@@ -27,6 +111,8 @@ header {
   height: 75px;
 }
 footer {
+  position: absolute;
+  bottom: 65px;
   padding-top: 6px;
   padding-bottom: 6px;
   font-size: 0.8em;
@@ -36,23 +122,6 @@ h1,h2,h3 {
   font-weight: normal;
 }
 
-#theresmore {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  background: rgba(128,128,128, 0.5);
-  border-radius: 100%;
-  display: block;
-  width: 50px;
-  height: 50px;
-  font-weight: 100;
-}
-
-section {
-  position: relative;
-  height: 400pt;
-  height: 100vh;
-}
 
 section h2 {
   margin-top: 0;
@@ -67,8 +136,9 @@ section#why {
 section#why h2 {
   background: rgba(0,0,0,0.7);
   padding: 100px;
+  padding-bottom: calc(50vh - 250px);
   color: white;
-  font-size: 40px;
+  font-size: 4vw;
 }
 
 carousel {

@@ -5,36 +5,37 @@ html(lang="en")
     meta(http-equiv="X-UA-Compatible", content="IE=edge")
     meta(name="viewport", content="width=device-width, initial-scale=1")
     link(type="text/css", rel="stylesheet", href="/style.css")
+    script(type="text/javascript", src="/scroll.js")
     script(type="text/javascript", src="/ux.js")
     title Activist.js
   body
     header
       h1 Activist.js
-      h2#theresmore
-    section#why
-      h2 Why?
-      h3 Because censorship is a problem for everyone.
-    section
-      h2 What?
-      h3 A library to improve website resilience.
-      button#demo-button.
-        Simulate Network Interference
-    section
-      h2 Who?
-      h3 You!
-      carousel
-        #step1.steps
-          h3 1. Where's your site?
-          input#config-url(type="text",placeholder="https://www.example.com/")
-        #step2.steps
-          h3 2. What should it say?
-          textarea#config-message.
-            This site is currently unavailable because.
-        #step3.steps
-          h3 Install!
-    footer
-      p.
-        Activist.js is a project of <a href="https://cs.washington.edu">
-        the University of Washington</a>, with
-        support from the <a href="https://www.opentechfund.org">
-        Open Technology Fund</a>.
+    div.main
+      section#why
+        h2 Censorship is not a user problem.
+
+      section#what
+        h2 What?
+        h3 A library to improve website resilience.
+        button#demo-button.
+          Simulate Network Interference
+      section#who
+        h2 Who?
+        h3 You!
+        carousel
+          #step1.steps
+            h3 1. Where's your site?
+            input#config-url(type="text",placeholder="https://www.example.com/")
+          #step2.steps
+            h3 2. What should it say?
+            textarea#config-message.
+              This site is currently unavailable because.
+          #step3.steps
+            h3 Install!
+        footer
+          p.
+            Activist.js is a project of <a href="https://cs.washington.edu">
+            the University of Washington</a>, with
+            support from the <a href="https://www.opentechfund.org">
+            Open Technology Fund</a>.
