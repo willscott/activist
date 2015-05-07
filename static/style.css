@@ -133,6 +133,14 @@ section#why {
   background-position: 50% 75%, center;
 }
 
+section#what {
+  background: linear-gradient(
+    to top right,
+    rgba(0,0,0, 0),
+    rgba(0,0,0, 100)
+  ), url('/back.png');
+}
+
 section h2 {
   background: rgba(0,0,0,0.7);
   padding: 50px 100px;
