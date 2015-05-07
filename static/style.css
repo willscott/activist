@@ -162,9 +162,11 @@ section#what h2 small {
 #what #browser {
   height: 40vh;
   width: 55vh;
+  right: 10%;
+  top: 40vh;
   background: url('/browser.png') no-repeat;
   background-size: contain;
-  position: relative;
+  position: absolute;
   display:inline-block;
 }
 
@@ -181,16 +183,22 @@ section#what h2 small {
   z-index: 2;
   left: 5%;
   height: 40vh;
+  top: 40vh;
 }
 
 #what hr {
   position: absolute;
   display: block;
-  width: 80vw;
+  width: 40vw;
   border: none;
   border-top: 5px dotted #2f4;
-  left: 10%;
   top: 65vh;
+}
+#what hr.left {
+  left: 10%;
+}
+#what hr.right {
+  left: 50%;
 }
 
 #what img#browserinter {
