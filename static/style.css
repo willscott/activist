@@ -189,7 +189,7 @@ section#what h2 small {
 #what hr {
   position: absolute;
   display: block;
-  width: 40vw;
+  width: 30vw;
   border: none;
   border-top: 5px dotted #2f4;
   top: 65vh;
@@ -198,7 +198,15 @@ section#what h2 small {
   left: 10%;
 }
 #what hr.right {
-  left: 50%;
+  left: 40%;
+  width: 40vw;
+}
+
+#what #demo-button {
+  position: absolute;
+  left: 40%;
+  top: 65vh;
+  z-index: 3;
 }
 
 #what img#browserinter {
