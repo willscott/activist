@@ -159,14 +159,44 @@ section#what h2 small {
   font-size: 16pt;
 }
 
-#what img#browser {
+#what #browser {
   height: 40vh;
+  width: 55vh;
   background: url('/browser.png') no-repeat;
+  background-size: contain;
+  position: relative;
+  display:inline-block;
+}
+
+#what img#firewall {
+  position: absolute;
+  z-index: 2;
+  left: 40%;
+  height: 60vh;
+  opacity: 0.5;
+}
+
+#what img#server {
+  position: absolute;
+  z-index: 2;
+  left: 5%;
+  height: 40vh;
+}
+
+#what hr {
+  position: absolute;
+  display: block;
+  width: 80vw;
+  border: none;
+  border-top: 5px dotted #2f4;
+  left: 10%;
+  top: 65vh;
 }
 
 #what img#browserinter {
-  padding-top:10vh;
-  height: 30vh;
+  display: none;
+  padding-top: 10%;
+  height: 80%;
 }
 
 
