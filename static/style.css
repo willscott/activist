@@ -159,6 +159,16 @@ section#what h2 small {
   font-size: 16pt;
 }
 
+#what img#browser {
+  height: 40vh;
+  background: url('/browser.png') no-repeat;
+}
+
+#what img#browserinter {
+  padding-top:10vh;
+  height: 30vh;
+}
+
 
 carousel {
   position: relative;
