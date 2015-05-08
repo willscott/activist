@@ -208,6 +208,14 @@ section#what h2 small {
   top: 65vh;
   z-index: 3;
 }
+#what #demo-button:after {
+  content: "Interfere"
+}
+
+#what #act-button:after {
+  content: "Activist"
+}
+
 
 #what img#browserinter {
   display: none;
