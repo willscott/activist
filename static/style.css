@@ -127,6 +127,19 @@ section h2 {
   margin-top: 0;
 }
 
+small.attribution {
+  position: absolute;
+  display: block;
+  font-size: 0.65em;
+  top: calc(100vh - 75px - 1.2em);
+  right: 0;
+  color: #333;
+  background: rgba(255,255,255,0.6);
+}
+small.attribution a {
+  color: #333;
+  text-decoration: none;
+}
 
 section#why {
   background: url('/phones.jpg') #000 no-repeat;
@@ -176,7 +189,6 @@ section#what h2 {
   background-size: contain;
   position: absolute;
   display:inline-block;
-  border: 1px solid black;
 }
 
 #what #firewall {
@@ -202,6 +214,7 @@ section#what h2 {
   #what #firewall { left: 123px; }
 }
 
+
 #what img#server {
   position: absolute;
   z-index: 2;
@@ -209,6 +222,7 @@ section#what h2 {
   height: 40vh;
   top: 40vh;
 }
+
 
 #what hr {
   position: absolute;
@@ -276,6 +290,54 @@ button {
   height: 80%;
   width: 55vh;
   max-width: 100%;
+}
+
+@media screen and (max-width: 750px) {
+  section#why h2 {
+    font-size: 1.4em;
+  }
+  section#what h2, section#who h2 {
+    padding: 0;
+    padding-bottom: 25px;
+    text-align: center;
+  }
+  section#what .title {
+    display: none;
+  }
+  #what img#server {
+    height: 140px;
+    top: 15vh;
+  }
+  #what hr {
+    transform: rotate(45deg);
+  }
+  #what #firewall {
+    display: none;
+  }
+  #what hr.left {
+    top: 35vh;
+  }
+  #what hr.right {
+    top: 52vh;
+    width: 150px;
+  }
+  #what #act-button {
+    margin-top: 30px;
+    top: 20vh;
+    left: 25%;
+  }
+  #what #demo-button {
+    top: 42vh;
+    left: 33%;
+  }
+  #what #browser {
+    max-width: 100%;
+    margin-top: 0;
+    width: 70%;
+    height: 55vw;
+    top: 55vh;
+    left: 30%;
+  }
 }
 
 
