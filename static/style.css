@@ -159,23 +159,47 @@ section#what h2 small {
   font-size: 16pt;
 }
 
+section#what h2 {
+  position: relative;
+  z-index: 2;
+}
+
 #what #browser {
+  z-index: 2;
   height: 40vh;
   width: 55vh;
+  max-width: 33%;
   right: 10%;
-  top: 40vh;
+  top: 65vh;
+  margin-top: -20vh;
   background: url('/browser.png') no-repeat;
   background-size: contain;
   position: absolute;
   display:inline-block;
+  border: 1px solid black;
 }
 
-#what img#firewall {
+#what #firewall {
   position: absolute;
-  z-index: 2;
-  left: 40%;
-  height: 60vh;
-  opacity: 0.5;
+  background: url('/firewall.png') repeat-y;
+  z-index: 1;
+  top: 0;
+  height: 100vh;
+  width: 320px;
+  opacity: 0.75;
+}
+
+@media screen and (max-width: 1800px) {
+  #what #firewall { left: 490px; }
+}
+@media screen and (max-width: 1500px) {
+  #what #firewall { left: 373px; }
+}
+@media screen and (max-width: 1200px) {
+  #what #firewall { left: 248px; }
+}
+@media screen and (max-width: 900px) {
+  #what #firewall { left: 123px; }
 }
 
 #what img#server {
@@ -202,18 +226,47 @@ section#what h2 small {
   width: 40vw;
 }
 
+button {
+  margin-bottom: 0px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.42857;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  -moz-user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  text-transform: none;
+}
+
 #what #demo-button {
   position: absolute;
   left: 40%;
   top: 65vh;
   z-index: 3;
 }
-#what #demo-button:after {
-  content: "Interfere"
+#what #demo-button.active {
+  color: #FFF;
+  background-color: #C9302C;
+  border-color: #AC2925;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.125) inset;
 }
 
-#what #act-button:after {
-  content: "Activist"
+#what #act-button {
+  position: absolute;
+  left: 5%;
+  margin-left: 2em;
+  top: 73vh;
+  z-index: 3;
+}
+#what #act-button.active {
+  color: #333;
+  background-color: #449D44;
+  border-color: #398439;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.125) inset;
 }
 
 
@@ -221,6 +274,8 @@ section#what h2 small {
   display: none;
   padding-top: 10%;
   height: 80%;
+  width: 55vh;
+  max-width: 100%;
 }
 
 
