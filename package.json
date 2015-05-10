@@ -11,9 +11,15 @@
     "activist"
   ],
   "dependencies": {
-    "activist": "^0.0.1",
+    "activist": "0.0.1",
+    "body-parser": "^1.12.3",
+    "browserify": "^10.1.3",
+    "cookie-parser": "^1.3.4",
+    "csurf": "^1.8.1",
     "express": "^4.11.1",
-    "jade": "~1.9.2"
+    "jade": "~1.9.2",
+    "minifyify": "^7.0.0",
+    "zip-stream": "^0.5.1"
   },
   "author": "Will Scott <willscott@gmail.com> (https://wills.co.tt)",
   "license": "BSD-2-Clause"

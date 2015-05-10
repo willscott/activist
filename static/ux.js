@@ -7,11 +7,21 @@ window.addEventListener('load', function () {
   setupDemo();
 }, true);
 
+function download (ev) {
+  if (document.getElementById('config-url').value == '') {
+    ev.preventDefault();
+    return false;
+  } else {
+    document.getElementById('msghidden').value = document.getElementById('config-message').innerHTML;
+  }
+}
+
 function setupDemo() {
   var ifere = document.getElementById('demo-button');
   var activ = document.getElementById('act-button');
   var rline = document.getElementsByClassName('right')[0];
   var bcontent = document.getElementById('browserinter');
+  var dload = document.getElementById('download');
   var ifering = false;
   var activing = false;
   var clickifere = function () {
@@ -30,4 +40,6 @@ function setupDemo() {
     }
   });
   ifere.addEventListener('click', clickifere, false);
+  document.getElementsByTagName('form')[0].addEventListener('submit', download, false);
+  dload.addEventListener('click', download, false);
 };

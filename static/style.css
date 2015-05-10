@@ -89,7 +89,6 @@ body.disabled-onepage-scroll, .disabled-onepage-scroll .onepage-wrapper, html {
   position: inherit;
 }
 
-
 body {
   padding-top:75px;
 }
@@ -273,6 +272,37 @@ button::-moz-focus-inner,input::-moz-focus-inner{
 	border:0
 }
 
+input {
+  display: inline-block;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857;
+  color: #555;
+  background-color: #FFF;
+  background-image: none;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+}
+
+input:focus{
+	border-color:#66afe9;
+	outline:0;
+	-webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+	box-shadow:inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)
+}
+
+input::-moz-placeholder{
+	color:#999;
+	opacity:1
+}
+
+input::-webkit-input-placeholder{
+	color:#999
+}
+
 #what #demo-button {
   position: absolute;
   left: 40%;
@@ -367,6 +397,8 @@ fieldset h3 {
 @media screen and (max-width: 750px) {
   section#why h2 {
     font-size: 1.4em;
+    padding: 25px;
+    padding-bottom: 100px;
   }
   section#what h2, section#who h2 {
     padding: 0;
@@ -409,5 +441,11 @@ fieldset h3 {
     height: 55vw;
     top: 55vh;
     left: 30%;
+  }
+  fieldset {
+    width: 75%;
+  }
+  #config-message {
+    width: calc(100% - 10px)
   }
 }

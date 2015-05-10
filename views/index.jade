@@ -32,12 +32,13 @@ html(lang="en")
       section#who
         h2 Activate your site!
         fieldset#configurator
-          form
+          form(method='post',action='/dl')
             #step1.steps
               h3 Site URL:
-              input#config-url(type="text",placeholder="https://www.example.com/")
+              input#config-url(type="text",name="url",placeholder="https://www.example.com/")
             #step2.steps
               h3 Message:
+              input#msghidden(type="hidden",name="message")
               #config-message(contentEditable='true')
                 h1 Interference Detected
                 h4 This server could not be reached due to network interference from your ISP.
@@ -46,6 +47,7 @@ html(lang="en")
                   li Consider using a proxy to connect. We recommend the use of <a href='https://www.torproject.org/'>Tor</a>
             #step3.steps
               h3 Download:
+              input(type="hidden",name="_csrf",value="#{csrfToken}")
               button#download Get Activist
         small.attribution.
           By Stefano.desabbata (Own work) [<a href="http://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>], <a href="https://commons.wikimedia.org/wiki/File%3AGeographies_of_Tor.png">via Wikimedia Commons</a>
