@@ -152,7 +152,7 @@ function getStatus(state, callback) {
     // Signals used for status:
     // 1. XHR for /activist.js
     results[0] = state;
-    dispatch('/activist.js?rand=' + Math.random(), 0, function (script) {
+    dispatch(require('./config').url + '?rand=' + Math.random(), 0, function (script) {
       return script.indexOf("This-is-Network-Interference!") > 0;
     });
     // 2. XHR for [safe domains]
@@ -163,7 +163,7 @@ function getStatus(state, callback) {
     dispatch('https://www.bbc.co.uk/favicon.ico', 1, false);
     dispatch('https://www.sfr.fr/favicon.ico', 1, false);
     // 3. XHR for [friendly domains]
-    dispatch('https://www.sitestat.us/clientinfo.js?l=' + window.location.href,
+    dispatch(require('./config').service + window.location.href,
              2, function (script) {
         return script.indexOf("down") > -1;
       });
