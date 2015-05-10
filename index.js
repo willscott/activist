@@ -31,11 +31,11 @@ app.post('/dl', parseForm, csrfProtection, function (req, res) {
   res.setHeader('Content-Disposition', 'attachment; filename="activist.zip"');
   res.setHeader('Content-Type', 'application/octet-stream');
   res.setHeader('Content-Transfer-Encoding', 'binary');
-  console.warn(req.body);
   var stream = packager.pack(req.body.message);
   stream.on('end', function() {
-    console.log('response finished.');
-    res.finish();
+    if (res.finish) {
+      res.finish();
+    }
   });
   stream.pipe(res);
 })
