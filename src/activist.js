@@ -36,7 +36,7 @@ activist.appCache = function () {
   } else {
     // Register the appCache.
     var iframe = document.createElement('iframe');
-    iframe.src = 'iframe.html';
+    iframe.src = 'activist-frame.html';
     iframe.style.display = 'none';
     document.body.appendChild(iframe);
   }
@@ -44,7 +44,7 @@ activist.appCache = function () {
 
 activist.serve = function () {
   console.log("Registering service worker.");
-  fetchHandler.register(['fallback.html', 'activist.js']);
+  fetchHandler.register(['activist-offline.html', 'activist.js']);
 };
 
 activist.render = function (status) {

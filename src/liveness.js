@@ -163,7 +163,7 @@ function getStatus(state, callback) {
     dispatch('https://www.bbc.co.uk/favicon.ico', 1, false);
     dispatch('https://www.sfr.fr/favicon.ico', 1, false);
     // 3. XHR for [friendly domains]
-    dispatch('https://www.p2pbr.com/clientinfo.js?l' + window.location.href,
+    dispatch('https://www.sitestat.us/clientinfo.js?l=' + window.location.href,
              2, function (script) {
         return script.indexOf("down") > -1;
       });
