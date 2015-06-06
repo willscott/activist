@@ -16,7 +16,10 @@ module.exports = function (grunt) {
         dest: 'activist.js'
       },
       options: {
-        plugin: ["minifyify"]
+        plugin: ["minifyify"],
+        browserifyOptions: {
+          debug: true
+        }
       }
     },
     mochaTest: {
