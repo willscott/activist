@@ -22,7 +22,6 @@ Deploying
     <script type='text/javascript' src='activist.js' async></script>
     ```
 
-
 2. Add Offline Cache (recommended)
 
     Adding an application cache manifest will allow activist.js to run on many
