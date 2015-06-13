@@ -48,14 +48,14 @@ var makeActivist = function (msg) {
 
 var makeAppcache = function () {
   return appcache[0] + new Date() + appcache[1];
-}
+};
 
 exports.pack = function (msg) {
   var stream = new zipstream({'comment': 'Generated ' + new Date()});
 
   stream.entry(makeActivist(msg), {name: 'activist.js'}, function (err) {
     if (err) {
-      s.finish();
+      stream.finish();
       throw err;
     }
     stream.entry(makeAppcache(), {name: 'activist.appcache'}, next.bind({}, stream, 0));

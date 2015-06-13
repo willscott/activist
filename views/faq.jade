@@ -1,0 +1,46 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible", content="IE=edge")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
+    link(type="text/css", rel="stylesheet", href="/style.css")
+    title Activist.js FAQ
+  body
+    header
+      h1 Activist.js
+    div.main
+      section#what
+        h2 <span class='title'>Frequently Asked Questions</span>
+        dl#faq
+          dt What is Activist.js?
+          dd.
+            Activist.js is a library which attempts to provide resilience for
+            websites without cooperation from visitors, browsers, or the
+            network. It does this by caching a script when visitors access your
+            server, which will make additional attempts to access content when
+            the server cannot be directly reached.
+          dt Which browsers does Activist.js support?
+          dd.
+            Activist.js supports all major browsers, including Chrome, Firefox,
+            and Internet Explorer. A full matrix of expected behavior is
+            maintained on our [wiki](https://github.com/willscott/activist/issues/4).
+          dt Why is this a thing?
+          dd.
+            The mechanisms that Activist.js uses to cache content were designed
+            for accessing websites when the user is offline, and are used by
+            some large websites, like Google Docs and Wunderlist. Due to their
+            design, these mechanisms have been difficult to retrofit onto sites
+            which are not designed for them. Activist.js provides a minimally
+            invasive drop-in solution for adding an Application Cache fall-back
+            to most websites without additional server-side support.
+          dt What else can I do?
+          dd.
+            We are working to create web standards which make it easier to
+            accomplish the same goals that are accomplished by Activist.js.
+        footer
+          p.
+            Activist.js is a project of <a href="https://cs.washington.edu">
+            the University of Washington</a>, with
+            support from the <a href="https://www.opentechfund.org">
+            Open Technology Fund</a>.

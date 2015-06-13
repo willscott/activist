@@ -121,6 +121,10 @@ h1,h2,h3 {
   font-weight: normal;
 }
 
+h2 a {
+  color: white;
+}
+
 
 section h2 {
   margin-top: 0;

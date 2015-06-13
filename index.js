@@ -15,15 +15,19 @@ app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/static'));
 app.use(cookieParser());
 
+app.get('/faq.html', csrfProtection, function (req, res) {
+  res.render('faq', { csrfToken: req.csrfToken() });
+});
+
 app.get('/', csrfProtection, function (req, res) {
   res.render('index', { csrfToken: req.csrfToken() });
 });
 
 app.use(function (err, req, res, next) {
-  if (err.code !== 'EBADCSRFTOKEN') return next(err)
+  if (err.code !== 'EBADCSRFTOKEN') return next(err);
 
   // handle CSRF token errors here
-  res.status(403)
+  res.status(403);
   res.end();
 });
 
@@ -38,7 +42,7 @@ app.post('/dl', parseForm, csrfProtection, function (req, res) {
     }
   });
   stream.pipe(res);
-})
+});
 
 var server = http.createServer(app);
 server.listen(8080);
