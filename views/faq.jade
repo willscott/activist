@@ -6,13 +6,13 @@ html(lang="en")
     meta(name="viewport", content="width=device-width, initial-scale=1")
     link(type="text/css", rel="stylesheet", href="/style.css")
     title Activist.js FAQ
-  body
+  body.faq
     header
       h1 Activist.js
     div.main
-      section#what
+      section#faq
         h2 <span class='title'>Frequently Asked Questions</span>
-        dl#faq
+        dl#questions
           dt What is Activist.js?
           dd.
             Activist.js is a library which attempts to provide resilience for
@@ -24,7 +24,8 @@ html(lang="en")
           dd.
             Activist.js supports all major browsers, including Chrome, Firefox,
             and Internet Explorer. A full matrix of expected behavior is
-            maintained on our [wiki](https://github.com/willscott/activist/issues/4).
+            maintained on our <a href='https://github.com/willscott/activist/issues/4'>
+            wiki</a>.
           dt Why is this a thing?
           dd.
             The mechanisms that Activist.js uses to cache content were designed
@@ -44,7 +45,7 @@ html(lang="en")
             HTML5 Application Cache mechanism is that the page which includes
             the manifest tag to configure the cache is implicitly cached itself,
             this means that an extra page is required, or your real content will
-            be cached and visitors may unexpectedly see out of date content. 
+            be cached and visitors may unexpectedly see out of date content.
           dt What about first-time visitors?
           dd.
             In the long term, we believe that this issue can be mitigated
@@ -56,16 +57,19 @@ html(lang="en")
             more robust URLs can be created in a way that is still largely
             recognizable, but can be loaded even with some forms of server
             disruption. You can follow our efforts on building resilient URLs
-            [here](https://willscott.github.io/peer-fallback/demo/firstvisit.html).
+            <a href='https://willscott.github.io/peer-fallback/demo/firstvisit.html'>
+            here</a>.
           dt What else can I do?
           dd.
             We are working to create web standards which make it easier to
             accomplish the same goals that are accomplished by Activist.js.
             You can join our mailing list to stay up-to-date on these issues,
             and to help advocate for an Internet that is free of disruption.
-        footer
-          p.
-            Activist.js is a project of <a href="https://cs.washington.edu">
-            the University of Washington</a>, with
-            support from the <a href="https://www.opentechfund.org">
-            Open Technology Fund</a>.
+      script(type='text/javascript').
+        document.getElementById('faq').focus();
+      footer
+        p.
+          Activist.js is a project of <a href="https://cs.washington.edu">
+          the University of Washington</a>, with
+          support from the <a href="https://www.opentechfund.org">
+          Open Technology Fund</a>.

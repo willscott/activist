@@ -92,6 +92,9 @@ body.disabled-onepage-scroll, .disabled-onepage-scroll .onepage-wrapper, html {
 body {
   padding-top:75px;
 }
+body.faq {
+  padding-top:0;
+}
 
 header,footer {
   background: black;
@@ -115,6 +118,10 @@ footer {
   padding-top: 6px;
   padding-bottom: 6px;
   font-size: 0.8em;
+}
+.faq footer {
+  bottom: 0;
+  position: fixed;
 }
 
 h1,h2,h3 {
@@ -152,12 +159,34 @@ section#why {
   background-position: 50% 75%, center;
 }
 
-section#what {
+section#what, section#faq {
   background: linear-gradient(
     to top right,
     rgba(0,0,0, 0),
     rgba(0,0,0, 100)
   ), url('/back.png');
+}
+
+section#faq {
+  overflow: scroll;
+  position: absolute;
+  width: 100%;
+  top: 75px;
+  bottom: 0px;
+}
+dl {
+  background: rgba(255,255,255,0.8);
+  padding-bottom: 150px;
+}
+dt {
+  font-size: 1.5em;
+  font-weight: 700;
+  padding-top: 0.25em;
+  padding-left: 1em;
+}
+dd {
+  max-width: 700px;
+  padding-bottom: 15px;
 }
 
 section#who {
