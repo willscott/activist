@@ -1,0 +1,8 @@
+CACHE MANIFEST
+activist.js
+FALLBACK:
+/ activist-offline.html
+
+#having this breaks firefox:
+#NETWORK:
+#*

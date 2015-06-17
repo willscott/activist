@@ -3,7 +3,7 @@
   "description": "resilience to network interference",
   "version": "0.1.0",
   "homepage": "https://github.com/willscott/activist",
-  "main": "activist.js",
+  "main": "express.js",
   "browser": "activist.js",
   "bugs": {
     "url": "https://github.com/willscott/activist/issues",
@@ -33,5 +33,10 @@
     "server-destroy": "^1.0.1",
     "server-event": "^1.0.1",
     "webdriverio": "^2.4.5"
+  },
+  "dependencies": {
+    "etag": "^1.7.0",
+    "fresh": "^0.3.0",
+    "parseurl": "^1.3.0"
   }
 }
