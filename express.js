@@ -110,7 +110,7 @@ function activist(options) {
   var rsrc_activist = {maxAge: maxAge};
   loadActivist(prefix, opts, rsrc_activist);
   var rsrc_appcache = createResource(opts.cache || loadContents('./assets/cache.appcache', prefix), maxAge, 'text/cache-manifest');
-  var rsrc_frame = createResource(opts.frame || loadContents('./activist/frame.html', prefix), maxAge, 'text/html');
+  var rsrc_frame = createResource(opts.frame || loadContents('./assets/frame.html', prefix), maxAge, 'text/html');
   var rsrc_offline = createResource(opts.offline || loadContents('./assets/offline.html', prefix), maxAge, 'text/html');
 
   return function (req, res, next) {
@@ -136,10 +136,12 @@ function activist(options) {
       send(req, res, rsrc_appcache);
     } else if (path === prefix + '.js') {
       send(req, res, rsrc_activist);
-    } else if (path === prefix + '.offline.html') {
+    } else if (path === prefix + '-offline.html') {
       send(req, res, rsrc_offline);
     } else if (path === prefix + '.html') {
       send(req, res, rsrc_frame);
+    } else {
+      throw new Error('Unhandled Request: ' + path);
     }
   };
 }
