@@ -14,6 +14,7 @@ var parseUrl = require('parseurl');
 var etag = require('etag');
 var fresh = require('fresh');
 
+var packager = require('./packager');
 
 var maxMaxAge = 60 * 60 * 24 * 365 * 1000; // 1 year
 
@@ -32,8 +33,28 @@ function loadContents (path, prefix) {
  * Get the contents of activist.js as a buffer - minified w/ browserify.
  * @private
  */
-function loadActivist (prefix, options) {
-  
+function loadActivist (prefix, options, rsrc) {
+  var config = {};
+  var defaultConfig = require('./src/config');
+  for (var i in defaultConfig) {
+    if (defaultConfig.hasOwnProperty(i) && !options[i]) {
+      config[i] = defaultConfig[i];
+    } else if (options[i]) {
+      config[i] = options[i];
+    }
+  }
+  config.url = prefix + '.js';
+  config.frame = prefix + '.html';
+  config.offline = prefix + '-offline.html';
+
+  rsrc.type = 'text/javascript';
+  packager(config, function (data) {
+    rsrc.body = data;
+    rsrc.headers = {
+      'Cache-Control': 'public, max-age=' + Math.floor(rsrc.maxAge / 1000),
+      'ETag': etag(data)
+    };
+  });
 }
 
 /**
@@ -86,7 +107,8 @@ function activist(options) {
   var opts = options || {};
   var prefix = opts.prefix || '/activist';
   var maxAge = opts.maxAge || maxMaxAge;
-  var rsrc_activist = createResource(loadActivist(prefix, opts), maxAge, 'text/javascript');
+  var rsrc_activist = {maxAge: maxAge};
+  loadActivist(prefix, opts, rsrc_activist);
   var rsrc_appcache = createResource(opts.cache || loadContents('./assets/cache.appcache', prefix), maxAge, 'text/cache-manifest');
   var rsrc_frame = createResource(opts.frame || loadContents('./activist/frame.html', prefix), maxAge, 'text/html');
   var rsrc_offline = createResource(opts.offline || loadContents('./assets/offline.html', prefix), maxAge, 'text/html');
