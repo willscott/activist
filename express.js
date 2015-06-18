@@ -15,6 +15,7 @@ var etag = require('etag');
 var fresh = require('fresh');
 
 var packager = require('./packager');
+var version = JSON.parse(fs.readFileSync(__dirname + '/package.json')).version;
 
 var maxMaxAge = 60 * 60 * 24 * 365 * 1000; // 1 year
 
@@ -25,8 +26,7 @@ var maxMaxAge = 60 * 60 * 24 * 365 * 1000; // 1 year
 function loadContents (path, prefix) {
   var fullFile = require.resolve(path);
   var data = fs.readFileSync(fullFile).toString();
-  data = data.replace("%%PREFIX%%", prefix);
-  return data;
+  return data.replace(/%%PREFIX%%/g, prefix).replace(/%%DATE%%/g, version);
 }
 
 /**

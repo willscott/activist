@@ -1,4 +1,5 @@
 CACHE MANIFEST
+# %%DATE%%
 %%PREFIX%%.js
 FALLBACK:
 / %%PREFIX%%-offline.html
