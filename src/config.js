@@ -3,6 +3,8 @@
 'use strict';
 
 exports.url = '/activist.js';
+exports.frame = '/activist-frame.html';
+exports.offline = '/activist-offline.html';
 exports.message = 'Your connection to this site was disrupted by your network. Consider an alternative method of access.';
 exports.service = 'https://www.sitestat.us/status.js?l=';
 exports.style = {

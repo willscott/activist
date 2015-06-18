@@ -1,8 +1,4 @@
 CACHE MANIFEST
-activist.js
+%%PREFIX%%.js
 FALLBACK:
-/ activist-offline.html
-
-#having this breaks firefox:
-#NETWORK:
-#*
+/ %%PREFIX%%-offline.html

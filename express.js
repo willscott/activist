@@ -21,10 +21,19 @@ var maxMaxAge = 60 * 60 * 24 * 365 * 1000; // 1 year
  * Get the contents of a file as a buffer.
  * @private
  */
-function loadContents (path) {
+function loadContents (path, prefix) {
   var fullFile = require.resolve(path);
-  var data = fs.readFileSync(fullFile);
+  var data = fs.readFileSync(fullFile).toString();
+  data = data.replace("%%PREFIX%%", prefix);
   return data;
+}
+
+/**
+ * Get the contents of activist.js as a buffer - minified w/ browserify.
+ * @private
+ */
+function loadActivist (prefix, options) {
+  
 }
 
 /**
@@ -77,10 +86,10 @@ function activist(options) {
   var opts = options || {};
   var prefix = opts.prefix || '/activist';
   var maxAge = opts.maxAge || maxMaxAge;
-  var rsrc_activist = createResource(loadContents('./activist.js'), maxAge, 'text/javascript');
-  var rsrc_appcache = createResource(opts.cache || loadContents('./assets/cache.appcache'), maxAge, 'text/cache-manifest');
-  var rsrc_frame = createResource(opts.frame || loadContents('./activist/frame.html'), maxAge, 'text/html');
-  var rsrc_offline = createResource(opts.offline || loadContents('./assets/offline.html'), maxAge, 'text/html');
+  var rsrc_activist = createResource(loadActivist(prefix, opts), maxAge, 'text/javascript');
+  var rsrc_appcache = createResource(opts.cache || loadContents('./assets/cache.appcache', prefix), maxAge, 'text/cache-manifest');
+  var rsrc_frame = createResource(opts.frame || loadContents('./activist/frame.html', prefix), maxAge, 'text/html');
+  var rsrc_offline = createResource(opts.offline || loadContents('./assets/offline.html', prefix), maxAge, 'text/html');
 
   return function (req, res, next) {
     var path = parseUrl(req).pathname;
