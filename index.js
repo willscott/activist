@@ -1,4 +1,5 @@
 var express = require('express');
+var activist = require('activist');
 var http = require('http');
 var cookieParser = require('cookie-parser');
 var csrf = require('csurf');
@@ -10,10 +11,13 @@ var parseForm = bodyParser.urlencoded({ extended: false });
 
 var app = express();
 
+app.disable('x-powered-by');
+
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(express.static(__dirname + '/static'));
 app.use(cookieParser());
+app.use(activist());
 
 app.get('/faq.html', csrfProtection, function (req, res) {
   res.render('faq', { csrfToken: req.csrfToken() });
@@ -32,16 +36,22 @@ app.use(function (err, req, res, next) {
 });
 
 app.post('/dl', parseForm, csrfProtection, function (req, res) {
-  res.setHeader('Content-Disposition', 'attachment; filename="activist.zip"');
-  res.setHeader('Content-Type', 'application/octet-stream');
-  res.setHeader('Content-Transfer-Encoding', 'binary');
   var stream = packager.pack(req.body.message);
-  stream.on('end', function() {
-    if (res.finish) {
-      res.finish();
-    }
+  var data = '';
+  stream.on('data', function (chunk) {
+    data += chunk;
   });
-  stream.pipe(res);
+
+  stream.on('end', function() {
+    res.writeHead(200, {
+      'Content-Disposition': 'attachment; filename="activist.zip"',
+      'Content-Type': 'application/octet-stream',
+      'Content-Transfer-Encoding': 'binary',
+      'Content-Length': data.length
+    });
+
+    res.end(data);
+  });
 });
 
 var server = http.createServer(app);
