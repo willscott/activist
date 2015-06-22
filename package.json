@@ -1,7 +1,7 @@
 {
   "name": "activist",
   "description": "resilience to network interference",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "homepage": "https://github.com/willscott/activist",
   "main": "express.js",
   "browser": "activist.js",
