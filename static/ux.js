@@ -25,6 +25,7 @@ function setupDemo() {
   var rline = document.getElementsByClassName('right')[0];
   var bcontent = document.getElementById('browserinter');
   var dload = document.getElementById('download');
+  var dd = document.getElementById('dd');
   var ifering = false;
   var activing = false;
   var clickifere = function () {
@@ -45,4 +46,7 @@ function setupDemo() {
   ifere.addEventListener('click', clickifere, false);
   document.getElementsByTagName('form')[0].addEventListener('submit', download, false);
   dload.addEventListener('click', download, false);
+  dd.addEventListener('click', function () {
+    document.getElementById('step2').style.display = 'block';
+  }, false);
 }

@@ -36,7 +36,8 @@ html(lang="en")
             #step1.steps
               h3 Site URL:
               input#config-url(type="text",name="url",placeholder="https://www.example.com/")
-            #step2.steps
+            #step2.steps.hidden
+              p Note: Downloading a direct copy of activist won't allow you to receive updates. We recommend adding the library to your build process instead.
               h3 Message:
               input#msghidden(type="hidden",name="message")
               #config-message(contentEditable='true')
@@ -45,11 +46,13 @@ html(lang="en")
                 ul
                   li Try using HTTPS for this connection, such as <strong>https</strong>://example.com instead of <strong>http</strong>://example.com
                   li Consider using a proxy to connect. We recommend the use of <a href='https://www.torproject.org/'>Tor</a>
-            #step3.steps
-              h3 Download:
               input(type="hidden",name="_csrf",value="#{csrfToken}")
               button#download Get Activist
-              a#github(href='https://www.github.com/willscott/activist') View on GitHub
+            #step3.steps
+              a.github(href='https://www.github.com/willscott/activist') View on GitHub
+              a.github(href='https://www.npmjs.com/package/activist') NPM / Express
+              a.github(href='https://www.github.com/willscott/activist-wp-plugin') Wordpress
+              a#dd.github Direct Download
         small.attribution.
           By Stefano.desabbata (Own work) [<a href="http://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>], <a href="https://commons.wikimedia.org/wiki/File%3AGeographies_of_Tor.png">via Wikimedia Commons</a>
         footer
