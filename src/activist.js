@@ -34,6 +34,11 @@ activist.appCache = function () {
   if (window.applicationCache.status > 0) {
     liveness([], activist.render);
   } else {
+    // Wait until loaded:
+    if (document.readyState !== 'complete') {
+      return window.addEventListener('load', activist.appCache, true);
+    }
+
     // Register the appCache.
     var iframe = document.createElement('iframe');
     iframe.src = require('./config').frame;

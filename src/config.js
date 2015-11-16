@@ -20,3 +20,12 @@ exports.style = {
   padding: "10px",
   fontFamily: "sans-serif"
 };
+
+// Allow runtime configuration of the script.
+if (typeof window !== 'undefined' && window.activistcfg) {
+  for (var i in window.activistcfg) {
+    if (window.activistcfg.hasOwnProperty(i)) {
+      exports[i] = window.activistcfg[i];
+    }
+  }
+}
