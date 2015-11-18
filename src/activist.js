@@ -7,12 +7,10 @@ var fetchHandler = require('./serviceworker');
 var activist = {};
 
 activist.connect = function () {
-  var scripts = document.getElementsByTagName('script'),
-    script = scripts[scripts.length - 1],
-    scriptSrc = script.src;
+  var script = require('./config').url;
   if (navigator && navigator.serviceWorker) {
     // Service Worker Entry
-    navigator.serviceWorker.register(scriptSrc, {
+    navigator.serviceWorker.register(script, {
       scope: "/*"
     }).then(function (worker) {
       console.log('got worker: ' + worker);
