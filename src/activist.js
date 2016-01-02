@@ -48,7 +48,7 @@ activist.appCache = function () {
 activist.serve = function () {
   console.log("Registering service worker.");
   var config = require('./config');
-  fetchHandler.register([config.offline, config.url]);
+  fetchHandler.register([config.offline, config.url].concat(config.explicitCache));
 };
 
 activist.render = function (status) {
