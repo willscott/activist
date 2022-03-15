@@ -33,7 +33,7 @@ Deploying
     <html manifest="/activist.appcache">
     ```
     
-    A sample appcache is available on [activistjs.com](http://activistjs.com).
+    A sample appcache is available in the gh-pages branch of this repo.
     
     The application cache needs to be served with the mime type of
     'text/cache-manifest' to work on old versions of internet explorer.
